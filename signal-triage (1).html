@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Signal — Cut Through the Noise</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --ink: #0a0a0f; --ink2: #1c1c28; --paper: #f5f3ee;
+    --accent: #ff3d2e; --accent2: #ff8c00; --teal: #00c897; --violet: #7b5ea7;
+    --border: rgba(10,10,15,0.12);
+    --font-display: 'Syne', sans-serif; --font-body: 'DM Sans', sans-serif;
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: var(--font-body); background: var(--paper); color: var(--ink); overflow-x: hidden; }
+
+  /* NAV */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.1rem 3rem; background: var(--paper);
+    border-bottom: 1.5px solid var(--border); transition: box-shadow 0.3s;
+  }
+  nav.scrolled { box-shadow: 0 2px 20px rgba(0,0,0,0.08); }
+  .nav-logo { font-family: var(--font-display); font-size: 1.3rem; font-weight: 800; letter-spacing: -0.03em; color: var(--ink); text-decoration: none; transition: opacity 0.2s; }
+  .nav-logo:hover { opacity: 0.7; }
+  .nav-logo span { color: var(--accent); }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a { font-size: 0.875rem; font-weight: 500; color: var(--ink); text-decoration: none; opacity: 0.6; transition: opacity 0.2s; position: relative; padding-bottom: 2px; }
+  .nav-links a::after { content:''; position:absolute; left:0; bottom:0; width:0; height:2px; background:var(--accent); border-radius:2px; transition:width 0.25s; }
+  .nav-links a:hover { opacity: 1; }
+  .nav-links a:hover::after { width: 100%; }
+  .nav-cta { background: var(--ink); color: var(--paper); border: none; padding: 0.6rem 1.4rem; border-radius: 100px; font-family: var(--font-body); font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: background 0.2s, transform 0.15s, box-shadow 0.2s; }
+  .nav-cta:hover { background: var(--accent); transform: scale(1.05); box-shadow: 0 4px 16px rgba(255,61,46,0.35); }
+  .nav-cta:active { transform: scale(0.97); }
+
+  /* HERO */
+  .hero { min-height: 92vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 5rem 2rem 4rem; }
+  .hero h1 { font-family: var(--font-display); font-size: clamp(3rem, 8vw, 6.5rem); font-weight: 800; line-height: 0.95; letter-spacing: -0.04em; color: var(--ink); max-width: 900px; animation: fadeUp 0.7s 0.05s ease both; }
+  .hero h1 .highlight { color: var(--accent); position: relative; display: inline-block; cursor: default; }
+  .hero h1 .highlight::after { content:''; position:absolute; left:0; bottom:4px; width:100%; height:6px; background:var(--accent); opacity:0.18; border-radius:3px; transition: opacity 0.3s, height 0.3s; }
+  .hero h1 .highlight:hover::after { opacity: 0.35; height: 10px; }
+  .hero-sub { font-size: 1.15rem; font-weight: 300; color: var(--ink); opacity: 0.65; max-width: 520px; line-height: 1.65; margin-top: 1.8rem; animation: fadeUp 0.7s 0.15s ease both; }
+  .hero-stats { display: flex; gap: 1rem; margin-top: 3rem; flex-wrap: wrap; justify-content: center; animation: fadeUp 0.7s 0.25s ease both; }
+  .stat-pill { display: flex; align-items: center; gap: 10px; background: #fff; border: 1.5px solid var(--border); border-radius: 100px; padding: 0.75rem 1.4rem; cursor: default; transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s; }
+  .stat-pill:hover { border-color: var(--accent); transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+  .stat-pill .big { font-family: var(--font-display); font-size: 1.5rem; font-weight: 800; line-height: 1; }
+  .stat-pill .big.red { color: var(--accent); }
+  .stat-pill .big.green { color: var(--teal); }
+  .stat-pill .small { font-size: 0.8rem; color: var(--ink); opacity: 0.55; font-weight: 400; }
+  .stat-arrow { font-size: 1.2rem; opacity: 0.3; align-self: center; }
+  .hero-cta-row { display: flex; gap: 1rem; margin-top: 2.5rem; animation: fadeUp 0.7s 0.35s ease both; flex-wrap: wrap; justify-content: center; }
+
+  .btn-primary { background: var(--accent); color: #fff; border: none; padding: 0.85rem 2.2rem; border-radius: 100px; font-family: var(--font-body); font-size: 0.95rem; font-weight: 500; cursor: pointer; transition: transform 0.15s, background 0.2s, box-shadow 0.2s; text-decoration: none; display: inline-block; }
+  .btn-primary:hover { transform: scale(1.05); background: #e62d1e; box-shadow: 0 6px 24px rgba(255,61,46,0.4); }
+  .btn-primary:active { transform: scale(0.97); box-shadow: none; }
+  .btn-ghost { background: transparent; color: var(--ink); border: 1.5px solid var(--border); padding: 0.85rem 2.2rem; border-radius: 100px; font-family: var(--font-body); font-size: 0.95rem; font-weight: 500; cursor: pointer; transition: border-color 0.2s, transform 0.15s, background 0.2s; text-decoration: none; display: inline-block; }
+  .btn-ghost:hover { border-color: var(--ink); transform: scale(1.05); background: rgba(10,10,15,0.04); }
+  .btn-ghost:active { transform: scale(0.97); }
+
+  /* TICKER */
+  .ticker-wrap { overflow: hidden; border-top: 1.5px solid var(--border); border-bottom: 1.5px solid var(--border); padding: 0.9rem 0; background: var(--ink); white-space: nowrap; cursor: default; }
+  .ticker-inner { display: inline-flex; animation: ticker 22s linear infinite; }
+  .ticker-wrap:hover .ticker-inner { animation-play-state: paused; }
+  .ticker-item { font-size: 0.8rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--paper); opacity: 0.7; padding: 0 2.5rem; }
+  .ticker-item span { color: var(--accent); opacity: 1; }
+  @keyframes ticker { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+
+  /* SECTIONS */
+  .section { padding: 6rem 3rem; max-width: 1100px; margin: 0 auto; }
+  .section-label { font-size: 0.75rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 1rem; }
+  .section-title { font-family: var(--font-display); font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 800; letter-spacing: -0.03em; color: var(--ink); line-height: 1.05; max-width: 600px; margin-bottom: 3.5rem; }
+  .divider { border: none; border-top: 1.5px solid var(--border); }
+
+  /* STEPS */
+  .steps-grid { display: flex; flex-direction: column; }
+  .step-row { display: grid; grid-template-columns: 80px 1fr; gap: 0 2rem; position: relative; padding-bottom: 3rem; opacity: 0; transform: translateY(30px); transition: opacity 0.55s ease, transform 0.55s ease; cursor: pointer; }
+  .step-row.visible { opacity: 1; transform: translateY(0); }
+  .step-row::before { content:''; position:absolute; left:39px; top:56px; bottom:0; width:2px; background:var(--border); transition: background 0.3s; }
+  .step-row:last-child::before { display: none; }
+  .step-row.expanded::before { background: var(--accent); opacity: 0.3; }
+
+  .step-left { display: flex; flex-direction: column; align-items: center; padding-top: 8px; }
+  .step-num { width:52px; height:52px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-size:1.1rem; font-weight:800; flex-shrink:0; position:relative; z-index:1; border:2px solid; transition: transform 0.25s, box-shadow 0.25s; }
+  .step-row:hover .step-num, .step-row.expanded .step-num { transform: scale(1.12); }
+  .step-num.s1 { background:#fff0ee; border-color:#ffc4be; color:var(--accent); }
+  .step-row:hover .step-num.s1, .step-row.expanded .step-num.s1 { box-shadow: 0 0 0 7px rgba(255,61,46,0.12); }
+  .step-num.s2 { background:#e6fff8; border-color:#9fe6d4; color:#008f67; }
+  .step-row:hover .step-num.s2, .step-row.expanded .step-num.s2 { box-shadow: 0 0 0 7px rgba(0,200,151,0.12); }
+  .step-num.s3 { background:#fff4e6; border-color:#ffcc80; color:#b86000; }
+  .step-row:hover .step-num.s3, .step-row.expanded .step-num.s3 { box-shadow: 0 0 0 7px rgba(255,140,0,0.12); }
+  .step-num.s4 { background:#f0edfe; border-color:#c5bcf6; color:#5a3ec8; }
+  .step-row:hover .step-num.s4, .step-row.expanded .step-num.s4 { box-shadow: 0 0 0 7px rgba(123,94,167,0.12); }
+
+  .step-content { padding-top: 10px; }
+  .step-tag { display:inline-block; font-size:0.7rem; font-weight:500; letter-spacing:0.08em; text-transform:uppercase; padding:3px 10px; border-radius:100px; margin-bottom:0.6rem; transition: transform 0.2s; }
+  .step-row:hover .step-tag, .step-row.expanded .step-tag { transform: translateX(4px); }
+  .tag-red    { background:#fff0ee; color:var(--accent);  border:1px solid #ffc4be; }
+  .tag-green  { background:#e6fff8; color:#008f67;        border:1px solid #9fe6d4; }
+  .tag-amber  { background:#fff4e6; color:#b86000;        border:1px solid #ffcc80; }
+  .tag-violet { background:#f0edfe; color:#5a3ec8;        border:1px solid #c5bcf6; }
+
+  .step-title { font-family:var(--font-display); font-size:1.4rem; font-weight:800; letter-spacing:-0.02em; margin-bottom:0.6rem; color:var(--ink); transition: color 0.2s; }
+  .step-row:hover .step-title, .step-row.expanded .step-title { color: var(--accent); }
+  .step-desc { font-size:0.95rem; color:var(--ink); opacity:0.6; line-height:1.7; max-width:520px; margin-bottom:0.75rem; }
+
+  .step-hint { font-size:0.75rem; color:var(--accent); font-weight:500; display:flex; align-items:center; gap:6px; transition: gap 0.2s; }
+  .step-row:hover .step-hint { gap: 10px; }
+  .step-row.expanded .step-hint { display: none; }
+  .hint-arrow { display:inline-block; transition: transform 0.3s; }
+
+  .step-body { overflow:hidden; max-height:0; transition: max-height 0.5s cubic-bezier(0.4,0,0.2,1), opacity 0.35s ease, padding 0.3s; opacity:0; padding-top:0; }
+  .step-row.expanded .step-body { max-height:700px; opacity:1; padding-top:0.5rem; }
+
+  /* Mini cards */
+  .mini-cards { display:flex; flex-wrap:wrap; gap:8px; margin-top:0.5rem; }
+  .mini-card { background:#fff; border:1.5px solid var(--border); border-radius:12px; padding:0.7rem 1rem; font-size:0.85rem; font-weight:500; color:var(--ink); display:flex; align-items:center; gap:8px; transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s; cursor:pointer; }
+  .mini-card:hover { border-color:var(--teal); transform:translateY(-2px); box-shadow:0 4px 14px rgba(0,0,0,0.07); }
+  .mini-card:active { transform: scale(0.97); }
+  .mini-card-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+  .dot-green { background:var(--teal); }
+  .dot-amber { background:var(--accent2); }
+
+  /* Score table */
+  .score-table { display:flex; flex-direction:column; gap:6px; max-width:440px; margin-top:0.75rem; }
+  .score-row { display:flex; align-items:center; gap:12px; background:#fff; border:1.5px solid var(--border); border-radius:10px; padding:0.6rem 1rem; transition: border-color 0.2s, transform 0.15s; cursor:pointer; }
+  .score-row:hover { border-color:var(--teal); transform:translateX(5px); }
+  .score-row:active { transform:translateX(2px); }
+  .score-label { flex:1; font-size:0.875rem; font-weight:500; }
+  .score-bar-wrap { width:80px; height:6px; background:#eee; border-radius:3px; overflow:hidden; }
+  .score-bar-fill { height:100%; border-radius:3px; width:0%; transition:width 0.9s cubic-bezier(0.4,0,0.2,1); }
+  .score-val { font-size:0.875rem; font-weight:700; min-width:36px; text-align:right; }
+  .val-pos { color:var(--teal); }
+  .val-neg { color:var(--accent); }
+
+  /* Tier pills */
+  .tier-pills { display:flex; gap:10px; flex-wrap:wrap; margin-top:1.2rem; }
+  .tier-pill { display:flex; align-items:center; gap:8px; padding:0.6rem 1.2rem; border-radius:100px; font-size:0.85rem; font-weight:500; border:2px solid; cursor:pointer; transition:transform 0.2s, box-shadow 0.2s; }
+  .tier-pill:hover { transform:scale(1.06); box-shadow:0 4px 16px rgba(0,0,0,0.1); }
+  .tier-pill:active { transform:scale(0.97); }
+  .tier-pill.urgent   { background:#fff0ee; border-color:var(--accent);  color:#c4291b; }
+  .tier-pill.important{ background:#fff8e6; border-color:var(--accent2); color:#905200; }
+  .tier-pill.noise    { background:#f5f5f5; border-color:#ccc;           color:#666; }
+  .tier-dot { width:9px; height:9px; border-radius:50%; }
+  .tier-pill.urgent    .tier-dot { background:var(--accent); }
+  .tier-pill.important .tier-dot { background:var(--accent2); }
+  .tier-pill.noise     .tier-dot { background:#aaa; }
+
+  /* Notif mock */
+  .notif-mock { display:flex; flex-direction:column; gap:8px; max-width:420px; margin-top:0.75rem; }
+  .notif-item { display:flex; align-items:flex-start; gap:12px; background:#fff; border:2px solid; border-radius:14px; padding:0.85rem 1.1rem; transition:transform 0.2s, box-shadow 0.2s; cursor:pointer; }
+  .notif-item:hover { transform:translateX(6px); box-shadow:0 4px 20px rgba(0,0,0,0.08); }
+  .notif-item:active { transform:translateX(2px); }
+  .notif-item.urgent { border-color:var(--accent); }
+  .notif-icon-wrap { width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
+  .notif-icon-wrap.red { background:#fff0ee; }
+  .notif-body { flex:1; }
+  .notif-title { font-size:0.88rem; font-weight:500; color:var(--ink); line-height:1.4; }
+  .notif-meta { font-size:0.75rem; color:var(--ink); opacity:0.45; margin-top:3px; }
+  .notif-badge { font-size:0.7rem; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; padding:2px 8px; border-radius:100px; flex-shrink:0; align-self:center; }
+  .badge-red   { background:var(--accent);  color:#fff; }
+  .badge-amber { background:var(--accent2); color:#fff; }
+
+  /* Batch summary */
+  .batch-summary { background:#fff; border:2px solid var(--accent2); border-radius:14px; padding:1rem 1.2rem; max-width:420px; margin-top:0.75rem; transition:box-shadow 0.2s, transform 0.2s; cursor:default; }
+  .batch-summary:hover { box-shadow:0 6px 24px rgba(255,140,0,0.18); transform:translateY(-2px); }
+  .batch-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; }
+  .batch-count-big { font-family:var(--font-display); font-size:1.5rem; font-weight:800; color:var(--ink); }
+  .batch-time-label { font-size:0.75rem; color:var(--ink); opacity:0.45; }
+  .batch-rows { display:flex; flex-direction:column; gap:4px; }
+  .batch-group-row { display:flex; align-items:center; gap:10px; padding:7px 8px; border-radius:8px; transition:background 0.15s; cursor:pointer; }
+  .batch-group-row:hover { background:#fff8f0; }
+  .batch-group-row:active { background:#ffe8cc; }
+  .batch-group-name { flex:1; font-size:0.875rem; color:var(--ink); opacity:0.7; }
+  .batch-group-pill { font-size:0.75rem; font-weight:700; background:#fff4e6; color:#905200; padding:2px 10px; border-radius:100px; border:1px solid #ffcc80; }
+
+  /* Noise EOD summary */
+  .noise-summary { background:#fff; border:2px solid #d0d0d0; border-radius:14px; padding:1rem 1.2rem; max-width:420px; margin-top:0.75rem; transition:box-shadow 0.2s, transform 0.2s; cursor:default; }
+  .noise-summary:hover { box-shadow:0 6px 24px rgba(0,0,0,0.09); transform:translateY(-2px); }
+  .noise-count-big { font-family:var(--font-display); font-size:1.5rem; font-weight:800; color:#555; }
+  .noise-breakdown { display:flex; flex-direction:column; gap:3px; margin-top:0.75rem; }
+  .noise-item { display:flex; align-items:center; gap:10px; padding:5px 8px; border-radius:8px; font-size:0.85rem; color:var(--ink); opacity:0.55; }
+  .noise-item-dot { width:6px; height:6px; border-radius:50%; background:#bbb; flex-shrink:0; }
+  .badge-noise { background:#e0e0e0; color:#555; }
+
+  /* FEATURES */
+  .features-strip { background:var(--ink); padding:5rem 3rem; }
+  .features-inner { max-width:1100px; margin:0 auto; }
+  .features-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:1.5rem; margin-top:3rem; }
+  .feature-card { border:1.5px solid rgba(245,243,238,0.1); border-radius:16px; padding:1.5rem; cursor:pointer; transition:border-color 0.25s, transform 0.2s, background 0.25s; }
+  .feature-card:hover { border-color:rgba(255,61,46,0.6); transform:translateY(-5px); background:rgba(255,255,255,0.05); }
+  .feature-card:active { transform:translateY(-2px); }
+  .feature-icon { width:42px; height:42px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:20px; margin-bottom:1rem; }
+  .feature-title { font-family:var(--font-display); font-size:1.05rem; font-weight:800; color:var(--paper); margin-bottom:0.5rem; letter-spacing:-0.02em; }
+  .feature-desc { font-size:0.85rem; color:var(--paper); opacity:0.5; line-height:1.6; }
+  .features-strip .section-label { color:var(--accent); }
+  .features-strip .section-title { color:var(--paper); margin-bottom:0; }
+
+  /* CTA */
+  .cta-section { background:var(--ink); color:var(--paper); text-align:center; padding:7rem 2rem; border-top:1px solid rgba(255,255,255,0.07); }
+  .cta-section .section-label { color:var(--accent); }
+  .cta-section h2 { font-family:var(--font-display); font-size:clamp(2.2rem,5vw,4rem); font-weight:800; letter-spacing:-0.04em; line-height:1; margin-bottom:1.2rem; color:var(--paper); }
+  .cta-section h2 .hl { color:var(--teal); }
+  .cta-section > p { font-size:1rem; opacity:0.5; max-width:380px; margin:0 auto 2.5rem; line-height:1.6; }
+  .email-row { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-bottom:1rem; }
+  .email-input { padding:0.85rem 1.4rem; border-radius:100px; border:1.5px solid rgba(245,243,238,0.2); background:rgba(255,255,255,0.07); color:var(--paper); font-family:var(--font-body); font-size:0.95rem; width:280px; outline:none; transition:border-color 0.2s, background 0.2s; }
+  .email-input::placeholder { color:rgba(245,243,238,0.3); }
+  .email-input:focus { border-color:var(--teal); background:rgba(255,255,255,0.1); }
+  .email-success { display:none; font-size:0.9rem; color:var(--teal); margin-top:0.5rem; font-weight:500; }
+
+  /* MODAL */
+  .modal-overlay { display:none; position:fixed; inset:0; z-index:200; background:rgba(10,10,15,0.65); align-items:center; justify-content:center; }
+  .modal-overlay.open { display:flex; }
+  .modal { background:var(--paper); border-radius:20px; padding:2.5rem; max-width:420px; width:90%; position:relative; animation:modalIn 0.3s cubic-bezier(0.34,1.56,0.64,1) both; }
+  @keyframes modalIn { from{opacity:0;transform:scale(0.85) translateY(20px)} to{opacity:1;transform:scale(1) translateY(0)} }
+  .modal-close { position:absolute; top:1rem; right:1rem; background:none; border:none; font-size:1.3rem; cursor:pointer; color:var(--ink); opacity:0.4; transition:opacity 0.2s, background 0.2s; width:32px; height:32px; display:flex; align-items:center; justify-content:center; border-radius:50%; line-height:1; }
+  .modal-close:hover { opacity:1; background:rgba(0,0,0,0.07); }
+  .modal h3 { font-family:var(--font-display); font-size:1.6rem; font-weight:800; letter-spacing:-0.03em; margin-bottom:0.5rem; }
+  .modal > p { font-size:0.9rem; color:var(--ink); opacity:0.6; margin-bottom:1.5rem; line-height:1.6; }
+  .modal-input { width:100%; padding:0.8rem 1.2rem; border-radius:12px; border:1.5px solid var(--border); background:#fff; font-family:var(--font-body); font-size:0.95rem; outline:none; transition:border-color 0.2s; margin-bottom:0.75rem; display:block; }
+  .modal-input:focus { border-color:var(--accent); }
+  .modal-btn { width:100%; padding:0.9rem; border-radius:12px; background:var(--accent); color:#fff; border:none; font-family:var(--font-body); font-size:1rem; font-weight:500; cursor:pointer; transition:background 0.2s, transform 0.15s; }
+  .modal-btn:hover { background:#e62d1e; transform:scale(1.02); }
+  .modal-btn:active { transform:scale(0.97); }
+  .modal-success { display:none; text-align:center; padding:1.5rem 0 0.5rem; }
+  .modal-success .check { font-size:3rem; margin-bottom:0.75rem; }
+  .modal-success p { color:var(--teal); font-weight:500; font-size:1rem; opacity:1; }
+
+  /* AUTH MODAL */
+  .auth-divider { display:flex; align-items:center; gap:10px; margin:1rem 0; color:var(--ink); opacity:0.35; font-size:0.8rem; }
+  .auth-divider::before, .auth-divider::after { content:''; flex:1; height:1px; background:var(--border); }
+  .oauth-btn { width:100%; padding:0.75rem 1rem; border-radius:12px; border:1.5px solid var(--border); background:#fff; font-family:var(--font-body); font-size:0.9rem; font-weight:500; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:8px; transition:border-color 0.2s, transform 0.15s, box-shadow 0.2s; }
+  .oauth-btn:hover { border-color:var(--ink); transform:scale(1.02); box-shadow:0 4px 14px rgba(0,0,0,0.08); }
+  .oauth-btn:active { transform:scale(0.97); }
+  .oauth-btn img { width:18px; height:18px; }
+  .auth-toggle { text-align:center; font-size:0.82rem; color:var(--ink); opacity:0.55; margin-top:1rem; }
+  .auth-toggle a { color:var(--accent); font-weight:500; cursor:pointer; text-decoration:none; }
+  .auth-toggle a:hover { text-decoration:underline; }
+  .auth-error { font-size:0.8rem; color:var(--accent); margin-bottom:0.5rem; display:none; }
+
+  /* NAV USER */
+  .nav-user { display:flex; align-items:center; gap:10px; }
+  .nav-avatar { width:34px; height:34px; border-radius:50%; background:var(--accent); color:#fff; font-family:var(--font-display); font-size:0.85rem; font-weight:800; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:opacity 0.2s; border:2px solid transparent; }
+  .nav-avatar:hover { opacity:0.85; border-color:var(--accent); }
+  .nav-signout { font-size:0.8rem; color:var(--ink); opacity:0.45; background:none; border:none; cursor:pointer; font-family:var(--font-body); transition:opacity 0.2s; }
+  .nav-signout:hover { opacity:1; }
+
+  /* TOAST */
+  .toast { position:fixed; bottom:2rem; left:50%; transform:translateX(-50%) translateY(80px); background:var(--ink); color:var(--paper); padding:0.75rem 1.6rem; border-radius:100px; font-size:0.875rem; font-weight:500; z-index:300; transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1), opacity 0.4s; opacity:0; pointer-events:none; white-space:nowrap; }
+  .toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
+
+  /* FOOTER */
+  footer { background:var(--ink2); color:var(--paper); display:flex; align-items:center; justify-content:space-between; padding:1.5rem 3rem; font-size:0.8rem; opacity:0.85; }
+  footer a { color:var(--paper); opacity:0.5; text-decoration:none; transition:opacity 0.2s; }
+  footer a:hover { opacity:1; }
+
+  /* GATE */
+  #gate-overlay { position:absolute; inset:0; z-index:50; display:flex; align-items:flex-start; justify-content:center; padding-top:6rem; pointer-events:auto; transition:opacity 0.5s ease, visibility 0.5s ease; opacity:1; visibility:visible; }
+  #gate-overlay.hidden { opacity:0; visibility:hidden; pointer-events:none; }
+  #gate-blur { position:absolute; inset:0; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); background:rgba(245,243,238,0.7); }
+  #gate-card { position:relative; z-index:1; background:#fff; border:1.5px solid var(--border); border-radius:24px; padding:2.5rem 2rem; max-width:420px; width:90%; text-align:center; box-shadow:0 20px 60px rgba(0,0,0,0.12); animation:fadeUp 0.5s 0.1s ease both; }
+  #gate-lock { font-size:2.5rem; margin-bottom:1rem; animation:pulse 2.5s infinite; display:inline-block; }
+  #gate-card h2 { font-family:var(--font-display); font-size:1.6rem; font-weight:800; letter-spacing:-0.03em; margin-bottom:0.6rem; color:var(--ink); }
+  #gate-card > p { font-size:0.9rem; color:var(--ink); opacity:0.55; margin-bottom:1.5rem; line-height:1.6; }
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes pulse  { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.4)} }
+
+  @media (max-width:640px) {
+    nav { padding:1rem 1.25rem; }
+    .nav-links { display:none; }
+    .section { padding:4rem 1.25rem; }
+    .features-strip { padding:4rem 1.25rem; }
+    .step-row { grid-template-columns:52px 1fr; gap:0 1rem; }
+    .step-row::before { left:24px; }
+    footer { flex-direction:column; gap:0.5rem; text-align:center; padding:1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div id="modal-form">
+      <h3>Get early access</h3>
+      <p>Be first in line. We'll reach out as soon as Signal is ready for your inbox.</p>
+      <input class="modal-input" type="text" id="modal-name" placeholder="Your name">
+      <input class="modal-input" type="email" id="modal-email" placeholder="Work email">
+      <button class="modal-btn" onclick="submitModal()">Join the waitlist →</button>
+    </div>
+    <div class="modal-success" id="modal-ok">
+      <div class="check">✅</div>
+      <p>You're on the list!<br>We'll be in touch very soon.</p>
+    </div>
+  </div>
+</div>
+
+<!-- AUTH MODAL -->
+<div class="modal-overlay" id="auth-modal" onclick="if(event.target===this)closeAuthModal()">
+  <div class="modal">
+    <button class="modal-close" onclick="closeAuthModal()">✕</button>
+    <div id="auth-form">
+      <h3 id="auth-title">Sign in</h3>
+      <p id="auth-subtitle">Welcome back. Connect with Google or Slack, or use your email.</p>
+
+      <button class="oauth-btn" onclick="authWithGoogle()">
+        <img src="https://www.google.com/favicon.ico" alt="Google"> Continue with Google
+      </button>
+      <button class="oauth-btn" onclick="authWithSlack()">
+        <img src="https://slack.com/favicon.ico" alt="Slack"> Continue with Slack
+      </button>
+
+      <div class="auth-divider">or</div>
+
+      <div class="auth-error" id="auth-error"></div>
+      <input class="modal-input" type="email" id="auth-email" placeholder="Email address">
+      <input class="modal-input" type="password" id="auth-password" placeholder="Password">
+      <button class="modal-btn" id="auth-submit-btn" onclick="submitAuth()">Sign in</button>
+
+      <div class="auth-toggle">
+        <span id="auth-toggle-text">Don't have an account?</span>
+        <a onclick="toggleAuthMode()"> <span id="auth-toggle-link">Sign up</span></a>
+      </div>
+    </div>
+    <div class="modal-success" id="auth-ok">
+      <div class="check">✅</div>
+      <p id="auth-ok-msg">Signed in successfully!</p>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="#" class="nav-logo">sig<span>·</span>nal</a>
+  <ul class="nav-links">
+    <li><a href="#how">How it works</a></li>
+    <li><a href="#scoring">Scoring</a></li>
+    <li><a href="#product">The product</a></li>
+  </ul>
+  <div class="nav-user" id="nav-user-area">
+    <button class="nav-cta" id="nav-signin-btn" onclick="openAuthModal()">Sign in</button>
+    <button class="nav-cta" onclick="openModal()">Get early access</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <h1>Stop drowning in<br><span class="highlight">47 pings</span></h1>
+  <p class="hero-sub">One smart layer on top of Slack and Gmail. No rules to configure. Just the 5 things that actually matter, right now.</p>
+  <div class="hero-stats">
+    <div class="stat-pill"><div><div class="big red">70+</div><div class="small">daily notifications</div></div></div>
+    <div class="stat-arrow">→</div>
+    <div class="stat-pill"><div><div class="big green">5</div><div class="small">things that matter</div></div></div>
+    <div class="stat-arrow">+</div>
+    <div class="stat-pill"><div><div class="big" style="color:#7b5ea7">1</div><div class="small">clean digest later</div></div></div>
+  </div>
+  <div class="hero-cta-row">
+    <a href="#how" class="btn-primary">See how it works</a>
+    <button class="btn-ghost" onclick="openModal()">Get early access</button>
+  </div>
+</section>
+
+<!-- GATED CONTENT WRAPPER -->
+<div id="gated-content" style="position:relative;">
+
+<!-- GATE OVERLAY -->
+<div id="gate-overlay">
+  <div id="gate-blur"></div>
+  <div id="gate-card">
+    <div id="gate-lock">🔒</div>
+    <h2>Sign in to unlock Signal</h2>
+    <p>See how it works, explore the scoring system, and get early access.</p>
+    <button class="oauth-btn" style="max-width:320px;margin:0 auto 8px;" onclick="authWithGoogle()">
+      <img src="https://www.google.com/favicon.ico" alt="Google"> Continue with Google
+    </button>
+    <button class="oauth-btn" style="max-width:320px;margin:0 auto 8px;" onclick="authWithSlack()">
+      <img src="https://slack.com/favicon.ico" alt="Slack"> Continue with Slack
+    </button>
+    <div class="auth-divider" style="max-width:320px;margin:0.75rem auto;">or</div>
+    <button class="btn-primary" style="max-width:320px;width:100%;display:block;margin:0 auto;" onclick="openAuthModal()">Sign in with email</button>
+    <p style="font-size:0.78rem;opacity:0.4;margin-top:1.2rem;">No credit card. No setup. Just connect.</p>
+  </div>
+</div>
+
+<!-- TICKER (hover to pause) -->
+<div class="ticker-wrap" title="Hover to pause">
+  <div class="ticker-inner">
+    <span class="ticker-item">Cut through the noise <span>·</span></span>
+    <span class="ticker-item">Real-time urgent alerts <span>·</span></span>
+    <span class="ticker-item">No config required <span>·</span></span>
+    <span class="ticker-item">Gmail + Slack connected <span>·</span></span>
+    <span class="ticker-item">Rules-based scoring <span>·</span></span>
+    <span class="ticker-item">Batched digest every 1–2 hours <span>·</span></span>
+    <span class="ticker-item">Daily noise recap at 5 PM <span>·</span></span>
+    <span class="ticker-item">Cut through the noise <span>·</span></span>
+    <span class="ticker-item">Real-time urgent alerts <span>·</span></span>
+    <span class="ticker-item">No config required <span>·</span></span>
+    <span class="ticker-item">Gmail + Slack connected <span>·</span></span>
+    <span class="ticker-item">Rules-based scoring <span>·</span></span>
+    <span class="ticker-item">Batched digest every 1–2 hours <span>·</span></span>
+    <span class="ticker-item">Daily noise recap at 5 PM <span>·</span></span>
+  </div>
+</div>
+
+<div id="how" style="max-width:1100px;margin:0 auto;padding:0 3rem;"><hr class="divider" style="margin-top:4rem;"></div>
+
+<!-- HOW IT WORKS -->
+<section class="section">
+  <p class="section-label">Step-by-step flow</p>
+  <h2 class="section-title">How it actually works in real life</h2>
+  <div class="steps-grid">
+
+    <!-- Step 1 -->
+    <div class="step-row" onclick="toggleStep(this)">
+      <div class="step-left"><div class="step-num s1">1</div></div>
+      <div class="step-content">
+        <span class="step-tag tag-red">Day 1 only</span>
+        <h3 class="step-title">Connect your accounts</h3>
+        <p class="step-desc">Two connections, that's it. No rules to write, no filters to configure — that kills adoption before you even start.</p>
+        <div class="step-hint"><span class="hint-arrow">→</span> Click to expand</div>
+        <div class="step-body">
+          <div class="mini-cards">
+            <div class="mini-card" id="gmail-card" onclick="connectGmail(event)">
+              <div class="mini-card-dot dot-green" id="gmail-dot"></div>
+              <span id="gmail-label">Gmail — inbox &amp; labels</span>
+            </div>
+            <div class="mini-card" id="slack-card" onclick="connectSlack(event)">
+              <div class="mini-card-dot" id="slack-dot" style="background:#ccc;"></div>
+              <span id="slack-label">Slack — DMs &amp; channels</span>
+            </div>
+          </div>
+          <p style="font-size:0.8rem;color:var(--accent);font-weight:500;margin-top:1rem;">No "set rules" nonsense. Zero config. Just connect.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2A -->
+    <div class="step-row" onclick="toggleStep(this)">
+      <div class="step-left"><div class="step-num s2">2a</div></div>
+      <div class="step-content">
+        <span class="step-tag tag-green">Pipeline — extract</span>
+        <h3 class="step-title">Extract signals from every message</h3>
+        <p class="step-desc">Every incoming notification passes through a lightweight signal extractor before any decision is made.</p>
+        <div class="step-hint"><span class="hint-arrow">→</span> Click to expand</div>
+        <div class="step-body">
+          <div class="mini-cards">
+            <div class="mini-card" onclick="showToast('Sender weight applied'); event.stopPropagation();"><div class="mini-card-dot dot-amber"></div>Who sent it?</div>
+            <div class="mini-card" onclick="showToast('Keyword scan active'); event.stopPropagation();"><div class="mini-card-dot dot-amber"></div>Keywords: "urgent", "ASAP"</div>
+            <div class="mini-card" onclick="showToast('Channel type detected'); event.stopPropagation();"><div class="mini-card-dot dot-amber"></div>Channel: DM vs group</div>
+            <div class="mini-card" onclick="showToast('Time context logged'); event.stopPropagation();"><div class="mini-card-dot dot-amber"></div>Time: work hours vs late</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2B -->
+    <div id="scoring" class="step-row" onclick="toggleStep(this)">
+      <div class="step-left"><div class="step-num s3">2b</div></div>
+      <div class="step-content">
+        <span class="step-tag tag-amber">Pipeline — score</span>
+        <h3 class="step-title">Score it, classify it</h3>
+        <p class="step-desc">A simple weighted scoring model — fast, transparent, adjustable. Every notification gets a score. Every score gets a lane.</p>
+        <div class="step-hint"><span class="hint-arrow">→</span> Click to expand</div>
+        <div class="step-body">
+          <div class="score-table">
+            <div class="score-row" onclick="showToast('+50 pts: Boss DM detected 🔴'); event.stopPropagation();">
+              <div class="score-label">Boss DM</div>
+              <div class="score-bar-wrap"><div class="score-bar-fill" style="background:var(--teal)" data-w="100"></div></div>
+              <div class="score-val val-pos">+50</div>
+            </div>
+            <div class="score-row" onclick="showToast('+30 pts: Direct mention found'); event.stopPropagation();">
+              <div class="score-label">Direct @mention</div>
+              <div class="score-bar-wrap"><div class="score-bar-fill" style="background:#5fcaaa" data-w="60"></div></div>
+              <div class="score-val val-pos">+30</div>
+            </div>
+            <div class="score-row" onclick="showToast('+20 pts: Keyword "urgent" flagged'); event.stopPropagation();">
+              <div class="score-label">Contains "urgent"</div>
+              <div class="score-bar-wrap"><div class="score-bar-fill" style="background:#9de4cf" data-w="40"></div></div>
+              <div class="score-val val-pos">+20</div>
+            </div>
+            <div class="score-row" onclick="showToast('−40 pts: Newsletter deprioritised'); event.stopPropagation();">
+              <div class="score-label">Newsletter / digest</div>
+              <div class="score-bar-wrap"><div class="score-bar-fill" style="background:var(--accent)" data-w="80"></div></div>
+              <div class="score-val val-neg">−40</div>
+            </div>
+          </div>
+          <div class="tier-pills">
+            <div class="tier-pill urgent"   onclick="showToast('Urgent: push notification fires now 🔴'); event.stopPropagation();"><div class="tier-dot"></div>Urgent — score &gt; 60</div>
+            <div class="tier-pill important" onclick="showToast('Important: added to next 1–2 hr batch 🟡'); event.stopPropagation();"><div class="tier-dot"></div>Important — 30 to 60</div>
+            <div class="tier-pill noise"    onclick="showToast('Noise: silent all day → daily digest at 5 PM ⚪'); event.stopPropagation();"><div class="tier-dot"></div>Noise — below 30 → daily digest</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 3A -->
+    <div id="product" class="step-row" onclick="toggleStep(this)">
+      <div class="step-left"><div class="step-num s4">3a</div></div>
+      <div class="step-content">
+        <span class="step-tag tag-violet">Real-time — urgent only</span>
+        <h3 class="step-title">Instant alerts — only what counts</h3>
+        <p class="step-desc">Only score &gt; 60 breaks through as a real-time push. Everything else waits.</p>
+        <div class="step-hint"><span class="hint-arrow">→</span> Click to expand</div>
+        <div class="step-body">
+          <div class="notif-mock">
+            <div class="notif-item urgent" onclick="showToast('Opening Slack thread…'); event.stopPropagation();">
+              <div class="notif-icon-wrap red">💬</div>
+              <div class="notif-body">
+                <div class="notif-title">Your manager mentioned you in Slack</div>
+                <div class="notif-meta">Slack · #product · 2 min ago</div>
+              </div>
+              <div class="notif-badge badge-red">Urgent</div>
+            </div>
+            <div class="notif-item urgent" onclick="showToast('Opening Gmail…'); event.stopPropagation();">
+              <div class="notif-icon-wrap red">📧</div>
+              <div class="notif-body">
+                <div class="notif-title">Sarah (CEO): "Can we talk today? Re: launch"</div>
+                <div class="notif-meta">Gmail · Direct · 4 min ago</div>
+              </div>
+              <div class="notif-badge badge-red">Urgent</div>
+            </div>
+          </div>
+          <p style="font-size:0.8rem;color:var(--ink);opacity:0.45;margin-top:0.75rem;font-style:italic;">Tap any alert to open it.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 3B -->
+    <div class="step-row" onclick="toggleStep(this)">
+      <div class="step-left"><div class="step-num s3">3b</div></div>
+      <div class="step-content">
+        <span class="step-tag tag-amber">Important — every 1–2 hours</span>
+        <h3 class="step-title">Grouped digest — the rest, organised</h3>
+        <p class="step-desc">Everything in the Important tier lands in a tidy batch every 1–2 hours, grouped by project or source. No interruptions, no chaos.</p>
+        <div class="step-hint"><span class="hint-arrow">→</span> Click to expand</div>
+        <div class="step-body">
+          <div class="batch-summary" onclick="event.stopPropagation();">
+            <div class="batch-header">
+              <div>
+                <div class="batch-count-big">12 updates</div>
+                <div class="batch-time-label">worth checking · since 10:00 AM</div>
+              </div>
+              <div class="notif-badge badge-amber">Digest</div>
+            </div>
+            <div class="batch-rows">
+              <div class="batch-group-row" onclick="showToast('Opening Project A — 5 threads')"><div class="batch-group-name">Project A threads</div><div class="batch-group-pill">5</div></div>
+              <div class="batch-group-row" onclick="showToast('Opening 4 emails')"><div class="batch-group-name">Emails</div><div class="batch-group-pill">4</div></div>
+              <div class="batch-group-row" onclick="showToast('Opening 3 Slack threads')"><div class="batch-group-name">Slack threads</div><div class="batch-group-pill">3</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 3C -->
+    <div class="step-row" onclick="toggleStep(this)">
+      <div class="step-left"><div class="step-num" style="background:#f0f0f0;border-color:#ccc;color:#666;width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:1rem;font-weight:800;flex-shrink:0;position:relative;z-index:1;border:2px solid;">3c</div></div>
+      <div class="step-content">
+        <span class="step-tag" style="background:#f0f0f0;color:#666;border:1px solid #ccc;">Noise — end of day</span>
+        <h3 class="step-title">Noise goes silent. One recap at day's end.</h3>
+        <p class="step-desc">Low-priority notifications are muted all day — no interruptions, no guilt. At 5 PM, Signal sends one calm summary of everything you safely skipped.</p>
+        <div class="step-hint"><span class="hint-arrow">→</span> Click to expand</div>
+        <div class="step-body">
+          <div class="noise-summary" onclick="event.stopPropagation();">
+            <div class="batch-header">
+              <div>
+                <div class="noise-count-big">38 ignored</div>
+                <div class="batch-time-label">low-priority · today · 5:00 PM</div>
+              </div>
+              <div class="notif-badge badge-noise">Noise</div>
+            </div>
+            <div class="noise-breakdown">
+              <div class="noise-item"><div class="noise-item-dot"></div>14 newsletters &amp; digests</div>
+              <div class="noise-item"><div class="noise-item-dot"></div>11 group Slack threads</div>
+              <div class="noise-item"><div class="noise-item-dot"></div>9 CC'd emails</div>
+              <div class="noise-item"><div class="noise-item-dot"></div>4 automated alerts</div>
+            </div>
+          </div>
+          <p style="font-size:0.8rem;color:var(--ink);opacity:0.4;margin-top:0.75rem;font-style:italic;">Nothing lost. Just 38 things that didn't need you today.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FEATURES -->
+<div class="features-strip">
+  <div class="features-inner">
+    <p class="section-label">Why Signal</p>
+    <h2 class="section-title">Built for people, not inboxes</h2>
+    <div class="features-grid">
+      <div class="feature-card" onclick="showToast('Connect in under 60 seconds ⚡')">
+        <div class="feature-icon" style="background:#fff0ee;">⚡</div>
+        <div class="feature-title">Zero config</div>
+        <div class="feature-desc">Connect in under 60 seconds. No rule-writing, no onboarding, no friction.</div>
+      </div>
+      <div class="feature-card" onclick="showToast('Every score decision is explainable 🎯')">
+        <div class="feature-icon" style="background:#e6fff8;">🎯</div>
+        <div class="feature-title">Transparent scoring</div>
+        <div class="feature-desc">No AI black box — every decision is explainable and tuneable from day one.</div>
+      </div>
+      <div class="feature-card" onclick="showToast('Your flow state stays intact 🕐')">
+        <div class="feature-icon" style="background:#fff4e6;">🕐</div>
+        <div class="feature-title">Timed batches</div>
+        <div class="feature-desc">Everything non-urgent arrives in a clean digest. Your focus stays unbroken.</div>
+      </div>
+      <div class="feature-card" onclick="showToast('38 notifications silenced today 🌙')">
+        <div class="feature-icon" style="background:#f0edfe;">🌙</div>
+        <div class="feature-title">Daily noise digest</div>
+        <div class="feature-desc">Noise stays silent all day. At 5 PM, one calm recap — everything you safely skipped, nothing lost.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CTA -->
+<section class="cta-section">
+  <p class="section-label">Early access</p>
+  <h2>Ready to get your<br><span class="hl">focus back?</span></h2>
+  <p>Gmail + Slack integration. 5-minute setup. No rule-writing required.</p>
+  <div class="email-row">
+    <input class="email-input" type="email" id="hero-email" placeholder="Enter your work email">
+    <button class="btn-primary" style="padding:0.85rem 1.8rem;" onclick="inlineSubmit()">Join waitlist</button>
+  </div>
+  <div class="email-success" id="email-ok">🎉 You're on the list — we'll be in touch soon!</div>
+  <div style="margin-top:1.25rem;">
+    <button class="btn-ghost" style="color:#f5f3ee;border-color:rgba(245,243,238,0.25);" onclick="openModal()">Learn more about Signal</button>
+  </div>
+</section>
+
+</div><!-- /gated-content -->
+
+<!-- FOOTER -->
+<footer>
+  <span>© 2025 Signal. All rights reserved.</span>
+  <div style="display:flex;gap:1.5rem;">
+    <a href="#" onclick="showToast('Privacy policy coming soon'); return false;">Privacy</a>
+    <a href="#" onclick="showToast('Terms coming soon'); return false;">Terms</a>
+    <a href="#" onclick="openModal(); return false;">Contact</a>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+const _sb = supabase.createClient(
+  'https://aovgxslluxrenozowpoo.supabase.co',
+  'sb_publishable_mzKZv2TTtxIZiNGAAtRFZQ_GSMusN_n'
+);
+
+async function addToWaitlist(email, name, source) {
+  const { error } = await _sb.from('waitlist').insert({ email, name: name || null, source });
+  if (error && error.code === '23505') return 'already';
+  if (error) throw error;
+  return 'ok';
+}
+
+function setGmailConnected(email) {
+  const dot   = document.getElementById('gmail-dot');
+  const label = document.getElementById('gmail-label');
+  const card  = document.getElementById('gmail-card');
+  if (!dot) return;
+  dot.style.background = 'var(--teal)';
+  label.textContent = '✓ Gmail connected' + (email ? ' · ' + email : '');
+  card.style.borderColor = 'var(--teal)';
+  card.style.background  = '#e6fff8';
+  card.onclick = (e) => { e.stopPropagation(); showToast('Gmail already connected ✓'); };
+  if (email) localStorage.setItem('signal_gmail', email);
+}
+
+function setSlackConnected(name) {
+  const dot   = document.getElementById('slack-dot');
+  const label = document.getElementById('slack-label');
+  const card  = document.getElementById('slack-card');
+  if (!dot) return;
+  dot.style.background = 'var(--teal)';
+  label.textContent = '✓ Slack connected' + (name ? ' · ' + name : '');
+  card.style.borderColor = 'var(--teal)';
+  card.style.background  = '#e6fff8';
+  card.onclick = (e) => { e.stopPropagation(); showToast('Slack already connected ✓'); };
+  localStorage.setItem('signal_slack', name || '1');
+}
+
+function _redirectUrl() {
+  return window.location.origin + window.location.pathname;
+}
+
+async function connectGmail(e) {
+  e.stopPropagation();
+  const card = document.getElementById('gmail-card');
+  card.style.opacity = '0.6';
+  document.getElementById('gmail-label').textContent = 'Connecting…';
+  const { error } = await _sb.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      scopes: 'openid email profile',
+      redirectTo: _redirectUrl(),
+      queryParams: { access_type: 'offline', prompt: 'consent' }
+    }
+  });
+  if (error) {
+    card.style.opacity = '1';
+    document.getElementById('gmail-label').textContent = 'Gmail — inbox & labels';
+    showToast('Google sign-in failed: ' + error.message);
+  }
+}
+
+async function connectSlack(e) {
+  e.stopPropagation();
+  const card = document.getElementById('slack-card');
+  card.style.opacity = '0.6';
+  document.getElementById('slack-label').textContent = 'Connecting…';
+  const { error } = await _sb.auth.signInWithOAuth({
+    provider: 'slack_oidc',
+    options: {
+      redirectTo: _redirectUrl(),
+      scopes: 'openid email profile'
+    }
+  });
+  if (error) {
+    card.style.opacity = '1';
+    document.getElementById('slack-label').textContent = 'Slack — DMs & channels';
+    showToast('Slack sign-in failed: ' + error.message);
+  }
+}
+
+// Auth modal
+let _authMode = 'signin';
+function openAuthModal() { document.getElementById('auth-modal').classList.add('open'); document.getElementById('auth-form').style.display='block'; document.getElementById('auth-ok').style.display='none'; document.getElementById('auth-error').style.display='none'; }
+function closeAuthModal() { document.getElementById('auth-modal').classList.remove('open'); }
+
+function toggleAuthMode() {
+  _authMode = _authMode === 'signin' ? 'signup' : 'signin';
+  const isSignUp = _authMode === 'signup';
+  document.getElementById('auth-title').textContent        = isSignUp ? 'Create account' : 'Sign in';
+  document.getElementById('auth-subtitle').textContent     = isSignUp ? 'Join Signal. Connect with Google, Slack, or email.' : 'Welcome back. Connect with Google or Slack, or use your email.';
+  document.getElementById('auth-submit-btn').textContent   = isSignUp ? 'Create account' : 'Sign in';
+  document.getElementById('auth-toggle-text').textContent  = isSignUp ? 'Already have an account?' : "Don't have an account?";
+  document.getElementById('auth-toggle-link').textContent  = isSignUp ? 'Sign in' : 'Sign up';
+}
+
+async function authWithGoogle() {
+  const { error } = await _sb.auth.signInWithOAuth({
+    provider: 'google',
+    options: { scopes: 'openid email profile', redirectTo: _redirectUrl() }
+  });
+  if (error) showToast('Google sign-in failed: ' + error.message);
+}
+async function authWithSlack() {
+  const { error } = await _sb.auth.signInWithOAuth({
+    provider: 'slack_oidc',
+    options: { redirectTo: _redirectUrl(), scopes: 'openid email profile' }
+  });
+  if (error) showToast('Slack sign-in failed: ' + error.message);
+}
+
+async function submitAuth() {
+  const email    = document.getElementById('auth-email').value.trim();
+  const password = document.getElementById('auth-password').value;
+  const errEl    = document.getElementById('auth-error');
+  errEl.style.display = 'none';
+  if (!email || !email.includes('@')) { errEl.textContent = 'Please enter a valid email.'; errEl.style.display='block'; return; }
+  if (!password || password.length < 6) { errEl.textContent = 'Password must be at least 6 characters.'; errEl.style.display='block'; return; }
+
+  const btn = document.getElementById('auth-submit-btn');
+  btn.textContent = _authMode === 'signup' ? 'Creating…' : 'Signing in…';
+  btn.disabled = true;
+
+  const { error } = _authMode === 'signup'
+    ? await _sb.auth.signUp({ email, password })
+    : await _sb.auth.signInWithPassword({ email, password });
+
+  if (error) {
+    errEl.textContent = error.message; errEl.style.display = 'block';
+    btn.textContent = _authMode === 'signup' ? 'Create account' : 'Sign in';
+    btn.disabled = false;
+    return;
+  }
+
+  if (_authMode === 'signup') {
+    await addToWaitlist(email, null, 'email_signup').catch(() => {});
+    document.getElementById('auth-ok-msg').textContent = 'Account created! Check your email to confirm.';
+  } else {
+    document.getElementById('auth-ok-msg').textContent = 'Signed in successfully!';
+  }
+  document.getElementById('auth-form').style.display = 'none';
+  document.getElementById('auth-ok').style.display   = 'block';
+  setTimeout(closeAuthModal, 2200);
+}
+
+function updateNavUser(session) {
+  const area = document.getElementById('nav-user-area');
+  if (session?.user) {
+    const initials = (session.user.user_metadata?.full_name || session.user.email || '?')
+      .split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+    area.innerHTML = `
+      <div class="nav-avatar" title="${session.user.email}" onclick="showToast('Signed in as ${session.user.email}')">${initials}</div>
+      <button class="nav-signout" onclick="signOut()">Sign out</button>
+      <button class="nav-cta" onclick="openModal()">Get early access</button>`;
+  } else {
+    area.innerHTML = `
+      <button class="nav-cta" id="nav-signin-btn" onclick="openAuthModal()">Sign in</button>
+      <button class="nav-cta" onclick="openModal()">Get early access</button>`;
+  }
+}
+
+async function signOut() {
+  await _sb.auth.signOut();
+  localStorage.removeItem('signal_gmail');
+  localStorage.removeItem('signal_slack');
+  // Reset connection cards
+  const gmailDot = document.getElementById('gmail-dot');
+  const slackDot = document.getElementById('slack-dot');
+  if (gmailDot) {
+    gmailDot.style.background = 'var(--teal)';
+    const gc = document.getElementById('gmail-card');
+    gc.style.borderColor = ''; gc.style.background = '';
+    document.getElementById('gmail-label').textContent = 'Gmail — inbox & labels';
+    gc.onclick = connectGmail;
+  }
+  if (slackDot) {
+    slackDot.style.background = '#ccc';
+    const sc = document.getElementById('slack-card');
+    sc.style.borderColor = ''; sc.style.background = '';
+    document.getElementById('slack-label').textContent = 'Slack — DMs & channels';
+    sc.onclick = connectSlack;
+  }
+  showToast('Signed out');
+}
+
+function setGateState(session) {
+  const overlay = document.getElementById('gate-overlay');
+  if (!overlay) return;
+  if (session?.user) {
+    overlay.classList.add('hidden');
+  } else {
+    overlay.classList.remove('hidden');
+  }
+}
+
+// On load: check if returning from OAuth redirect
+_sb.auth.onAuthStateChange(async (event, session) => {
+  updateNavUser(session);
+  setGateState(session);
+
+  if (!session?.user) {
+    localStorage.removeItem('signal_gmail');
+    localStorage.removeItem('signal_slack');
+    return;
+  }
+
+  const provider   = session.user.app_metadata?.provider || '';
+  const providers  = session.user.app_metadata?.providers || [];
+  const identities = (session.user.identities || []).map(i => i.provider);
+  const email      = session.user.email;
+  const name       = session.user.user_metadata?.full_name || session.user.user_metadata?.name || null;
+
+  console.log('[Signal auth]', { event, provider, providers, identities, email });
+
+  const isGoogle = provider === 'google' || providers.includes('google') || identities.includes('google');
+  const isSlack  = provider === 'slack_oidc' || provider === 'slack' ||
+                   providers.includes('slack_oidc') || providers.includes('slack') ||
+                   identities.includes('slack_oidc') || identities.includes('slack');
+
+  if (isGoogle) {
+    setGmailConnected(email);
+    if (event === 'SIGNED_IN') {
+      await addToWaitlist(email, name, 'gmail_oauth').catch(() => {});
+      showToast('🎉 Gmail connected — you\'re on the list!');
+    }
+  } else if (isSlack) {
+    setSlackConnected(name || email);
+    if (event === 'SIGNED_IN') {
+      await addToWaitlist(email, name, 'slack_oauth').catch(() => {});
+      showToast('🎉 Slack connected — you\'re on the list!');
+    }
+  }
+});
+
+// Restore card state from localStorage on every page load
+document.addEventListener('DOMContentLoaded', () => {
+  const gmail = localStorage.getItem('signal_gmail');
+  const slack = localStorage.getItem('signal_slack');
+  if (gmail) setGmailConnected(gmail);
+  if (slack) setSlackConnected(slack === '1' ? '' : slack);
+});
+
+// Warn if opened as file:// — OAuth won't work
+if (window.location.protocol === 'file:') {
+  console.warn('Signal: OAuth requires an HTTP server. Open via Live Server or http://localhost, not file://');
+  showToast('⚠️ Open via a local server — OAuth needs HTTP');
+}
+
+// Scroll shadow on nav
+window.addEventListener('scroll', () => {
+  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 40);
+});
+
+// Scroll reveal
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+}, { threshold: 0.12 });
+document.querySelectorAll('.step-row').forEach(r => io.observe(r));
+
+// Toggle step expand/collapse
+function toggleStep(el) {
+  const wasOpen = el.classList.contains('expanded');
+  document.querySelectorAll('.step-row.expanded').forEach(s => s.classList.remove('expanded'));
+  if (!wasOpen) {
+    el.classList.add('expanded');
+    el.querySelectorAll('.score-bar-fill[data-w]').forEach((b, i) => {
+      setTimeout(() => { b.style.width = b.dataset.w + '%'; }, 80 + i * 60);
+    });
+  }
+}
+
+// Auto-open first visible step after load
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    const first = document.querySelector('.step-row');
+    if (first) toggleStep(first);
+  }, 600);
+});
+
+// Toast
+let _tt;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(_tt);
+  _tt = setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+// Modal
+function openModal() { document.getElementById('modal').classList.add('open'); document.getElementById('modal-form').style.display='block'; document.getElementById('modal-ok').style.display='none'; }
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+async function submitModal() {
+  const email = document.getElementById('modal-email').value.trim();
+  const name  = document.getElementById('modal-name').value.trim();
+  if (!email || !email.includes('@')) { showToast('Please enter a valid email'); return; }
+  const btn = document.querySelector('.modal-btn');
+  btn.textContent = 'Joining…'; btn.disabled = true;
+  try {
+    const result = await addToWaitlist(email, name, 'modal');
+    document.getElementById('modal-form').style.display = 'none';
+    document.getElementById('modal-ok').style.display = 'block';
+    if (result === 'already') document.querySelector('#modal-ok p').textContent = "You're already on the list! We'll be in touch.";
+    setTimeout(closeModal, 2400);
+  } catch {
+    showToast('Something went wrong — try again');
+    btn.textContent = 'Join the waitlist →'; btn.disabled = false;
+  }
+}
+
+// Inline CTA
+async function inlineSubmit() {
+  const email = document.getElementById('hero-email').value.trim();
+  if (!email || !email.includes('@')) { showToast('Please enter a valid email'); return; }
+  const btn = document.querySelector('.cta-section .btn-primary');
+  btn.textContent = 'Joining…'; btn.disabled = true;
+  try {
+    const result = await addToWaitlist(email, null, 'inline');
+    document.getElementById('email-ok').style.display = 'block';
+    document.getElementById('hero-email').value = '';
+    showToast(result === 'already' ? "You're already on the list!" : "🎉 You're on the list!");
+  } catch {
+    showToast('Something went wrong — try again');
+  }
+  btn.textContent = 'Join waitlist'; btn.disabled = false;
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeModal(); closeAuthModal(); } });
+</script>
+</body>
+</html>
