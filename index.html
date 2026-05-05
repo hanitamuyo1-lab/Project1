@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Signal – Cut Through the Noise</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --ink: #0a0a0f; --ink2: #1c1c28; --paper: #f5f3ee;
+    --accent: #ff3d2e; --accent2: #ff8c00; --teal: #00c897; --violet: #7b5ea7;
+    --border: rgba(10,10,15,0.12);
+    --font-display: 'Syne', sans-serif; --font-body: 'DM Sans', sans-serif;
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: var(--font-body); background: var(--paper); color: var(--ink); overflow-x: hidden; }
+
+  /* NAV */
+  nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 1.1rem 3rem; background: var(--paper); border-bottom: 1.5px solid var(--border); transition: box-shadow 0.3s; }
+  nav.scrolled { box-shadow: 0 2px 20px rgba(0,0,0,0.08); }
+  .nav-logo { font-family: var(--font-display); font-size: 1.3rem; font-weight: 800; letter-spacing: -0.03em; color: var(--ink); text-decoration: none; transition: opacity 0.2s; }
+  .nav-logo:hover { opacity: 0.7; }
+  .nav-logo span { color: var(--accent); }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a { font-size: 0.875rem; font-weight: 500; color: var(--ink); text-decoration: none; opacity: 0.6; transition: opacity 0.2s; position: relative; padding-bottom: 2px; }
+  .nav-links a::after { content:''; position:absolute; left:0; bottom:0; width:0; height:2px; background:var(--accent); border-radius:2px; transition:width 0.25s; }
+  .nav-links a:hover { opacity: 1; }
+  .nav-links a:hover::after { width: 100%; }
+  .nav-cta { background: var(--ink); color: var(--paper); border: none; padding: 0.6rem 1.4rem; border-radius: 100px; font-family: var(--font-body); font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: background 0.2s, transform 0.15s, box-shadow 0.2s; }
+  .nav-cta:hover { background: var(--accent); transform: scale(1.05); box-shadow: 0 4px 16px rgba(255,61,46,0.35); }
+  .nav-cta:active { transform: scale(0.97); }
+
+  /* HERO */
+  .hero { min-height: 92vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 5rem 2rem 4rem; }
+  .hero h1 { font-family: var(--font-display); font-size: clamp(3rem, 8vw, 6.5rem); font-weight: 800; line-height: 0.95; letter-spacing: -0.04em; color: var(--ink); max-width: 900px; animation: fadeUp 0.7s 0.05s ease both; }
+  .hero h1 .highlight { color: var(--accent); position: relative; display: inline-block; cursor: default; }
+  .hero h1 .highlight::after { content:''; position:absolute; left:0; bottom:4px; width:100%; height:6px; background:var(--accent); opacity:0.18; border-radius:3px; transition: opacity 0.3s, height 0.3s; }
+  .hero h1 .highlight:hover::after { opacity: 0.35; height: 10px; }
+  .hero-sub { font-size: 1.15rem; font-weight: 300; color: var(--ink); opacity: 0.65; max-width: 520px; line-height: 1.65; margin-top: 1.8rem; animation: fadeUp 0.7s 0.15s ease both; }
+  .hero-stats { display: flex; gap: 1rem; margin-top: 3rem; flex-wrap: wrap; justify-content: center; animation: fadeUp 0.7s 0.25s ease both; }
+  .stat-pill { display: flex; align-items: center; gap: 10px; background: #fff; border: 1.5px solid var(--border); border-radius: 100px; padding: 0.75rem 1.4rem; cursor: default; transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s; }
+  .stat-pill:hover { border-color: var(--accent); transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+  .stat-pill .big { font-family: var(--font-display); font-size: 1.5rem; font-weight: 800; line-height: 1; }
+  .stat-pill .big.red { color: var(--accent); }
+  .stat-pill .big.green { color: var(--teal); }
+  .stat-pill .small { font-size: 0.8rem; color: var(--ink); opacity: 0.55; font-weight: 400; }
+  .stat-arrow { font-size: 1.2rem; opacity: 0.3; align-self: center; }
+  .hero-cta-row { display: flex; gap: 1rem; margin-top: 2.5rem; animation: fadeUp 0.7s 0.35s ease both; flex-wrap: wrap; justify-content: center; }
+  .btn-primary { background: var(--accent); color: #fff; border: none; padding: 0.85rem 2.2rem; border-radius: 100px; font-family: var(--font-body); font-size: 0.95rem; font-weight: 500; cursor: pointer; transition: transform 0.15s, background 0.2s, box-shadow 0.2s; text-decoration: none; display: inline-block; }
+  .btn-primary:hover { transform: scale(1.05); background: #e62d1e; box-shadow: 0 6px 24px rgba(255,61,46,0.4); }
+  .btn-primary:active { transform: scale(0.97); box-shadow: none; }
+  .btn-ghost { background: transparent; color: var(--ink); border: 1.5px solid var(--border); padding: 0.85rem 2.2rem; border-radius: 100px; font-family: var(--font-body); font-size: 0.95rem; font-weight: 500; cursor: pointer; transition: border-color 0.2s, transform 0.15s, background 0.2s; text-decoration: none; display: inline-block; }
+  .btn-ghost:hover { border-color: var(--ink); transform: scale(1.05); background: rgba(10,10,15,0.04); }
+  .btn-ghost:active { transform: scale(0.97); }
+
+  /* TICKER */
+  .ticker-wrap { overflow: hidden; border-top: 1.5px solid var(--border); border-bottom: 1.5px solid var(--border); padding: 0.9rem 0; background: var(--ink); white-space: nowrap; cursor: default; }
+  .ticker-inner { display: inline-flex; animation: ticker 26s linear infinite; }
+  .ticker-wrap:hover .ticker-inner { animation-play-state: paused; }
+  .ticker-item { font-size: 0.8rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--paper); opacity: 0.7; padding: 0 2.5rem; }
+  .ticker-item span { color: var(--accent); opacity: 1; }
+  @keyframes ticker { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+
+  /* SECTIONS */
+  .section { padding: 6rem 3rem; max-width: 1100px; margin: 0 auto; }
+  .section-label { font-size: 0.75rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 1rem; }
+  .section-title { font-family: var(--font-display); font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 800; letter-spacing: -0.03em; color: var(--ink); line-height: 1.05; max-width: 600px; margin-bottom: 3.5rem; }
+  .divider { border: none; border-top: 1.5px solid var(--border); }
+
+  /* STEPS */
+  .steps-grid { display: flex; flex-direction: column; }
+  .step-row { display: grid; grid-template-columns: 80px 1fr; gap: 0 2rem; position: relative; padding-bottom: 3rem; opacity: 0; transform: translateY(30px); transition: opacity 0.55s ease, transform 0.55s ease; cursor: pointer; }
+  .step-row.visible { opacity: 1; transform: translateY(0); }
+  .step-row::before { content:''; position:absolute; left:39px; top:56px; bottom:0; width:2px; background:var(--border); transition: background 0.3s; }
+  .step-row:last-child::before { display: none; }
+  .step-row.expanded::before { background: var(--accent); opacity: 0.3; }
+  .step-left { display: flex; flex-direction: column; align-items: center; padding-top: 8px; }
+  .step-num { width:52px; height:52px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-size:1.1rem; font-weight:800; flex-shrink:0; position:relative; z-index:1; border:2px solid; transition: transform 0.25s, box-shadow 0.25s; }
+  .step-row:hover .step-num, .step-row.expanded .step-num { transform: scale(1.12); }
+  .step-num.s1 { background:#fff0ee; border-color:#ffc4be; color:var(--accent); }
+  .step-row:hover .step-num.s1, .step-row.expanded .step-num.s1 { box-shadow: 0 0 0 7px rgba(255,61,46,0.12); }
+  .step-num.s2 { background:#e6fff8; border-color:#9fe6d4; color:#008f67; }
+  .step-row:hover .step-num.s2, .step-row.expanded .step-num.s2 { box-shadow: 0 0 0 7px rgba(0,200,151,0.12); }
+  .step-num.s3 { background:#fff4e6; border-color:#ffcc80; color:#b86000; }
+  .step-row:hover .step-num.s3, .step-row.expanded .step-num.s3 { box-shadow: 0 0 0 7px rgba(255,140,0,0.12); }
+  .step-num.s4 { background:#f0edfe; border-color:#c5bcf6; color:#5a3ec8; }
+  .step-row:hover .step-num.s4, .step-row.expanded .step-num.s4 { box-shadow: 0 0 0 7px rgba(123,94,167,0.12); }
+  .step-content { padding-top: 10px; }
+  .step-tag { display:inline-block; font-size:0.7rem; font-weight:500; letter-spacing:0.08em; text-transform:uppercase; padding:3px 10px; border-radius:100px; margin-bottom:0.6rem; transition: transform 0.2s; }
+  .step-row:hover .step-tag, .step-row.expanded .step-tag { transform: translateX(4px); }
+  .tag-red    { background:#fff0ee; color:var(--accent);  border:1px solid #ffc4be; }
+  .tag-green  { background:#e6fff8; color:#008f67;        border:1px solid #9fe6d4; }
+  .tag-amber  { background:#fff4e6; color:#b86000;        border:1px solid #ffcc80; }
+  .tag-violet { background:#f0edfe; color:#5a3ec8;        border:1px solid #c5bcf6; }
+  .step-title { font-family:var(--font-display); font-size:1.4rem; font-weight:800; letter-spacing:-0.02em; margin-bottom:0.6rem; color:var(--ink); transition: color 0.2s; }
+  .step-row:hover .step-title, .step-row.expanded .step-title { color: var(--accent); }
+  .step-desc { font-size:0.95rem; color:var(--ink); opacity:0.6; line-height:1.7; max-width:520px; margin-bottom:0.75rem; }
+  .step-hint { font-size:0.75rem; color:var(--accent); font-weight:500; display:flex; align-items:center; gap:6px; transition: gap 0.2s; }
+  .step-row:hover .step-hint { gap: 10px; }
+  .step-row.expanded .step-hint { display: none; }
+  .step-body { overflow:hidden; max-height:0; transition: max-height 0.5s cubic-bezier(0.4,0,0.2,1), opacity 0.35s ease, padding 0.3s; opacity:0; padding-top:0; }
+  .step-row.expanded .step-body { max-height:700px; opacity:1; padding-top:0.5rem; }
+
+  /* Mini cards */
+  .mini-cards { display:flex; flex-wrap:wrap; gap:8px; margin-top:0.5rem; }
+  .mini-card { background:#fff; border:1.5px solid var(--border); border-radius:12px; padding:0.7rem 1rem; font-size:0.85rem; font-weight:500; color:var(--ink); display:flex; align-items:center; gap:8px; transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s; cursor:pointer; }
+  .mini-card:hover { border-color:var(--teal); transform:translateY(-2px); box-shadow:0 4px 14px rgba(0,0,0,0.07); }
+  .mini-card:active { transform: scale(0.97); }
+  .mini-card-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; background:#ccc; }
+  .dot-green { background:var(--teal) !important; }
+  .dot-amber { background:var(--accent2); }
+
+  /* Score table */
+  .score-table { display:flex; flex-direction:column; gap:6px; max-width:440px; margin-top:0.75rem; }
+  .score-row { display:flex; align-items:center; gap:12px; background:#fff; border:1.5px solid var(--border); border-radius:10px; padding:0.6rem 1rem; transition: border-color 0.2s, transform 0.15s; cursor:pointer; }
+  .score-row:hover { border-color:var(--teal); transform:translateX(5px); }
+  .score-row:active { transform:translateX(2px); }
+  .score-label { flex:1; font-size:0.875rem; font-weight:500; }
+  .score-bar-wrap { width:80px; height:6px; background:#eee; border-radius:3px; overflow:hidden; }
+  .score-bar-fill { height:100%; border-radius:3px; width:0%; transition:width 0.9s cubic-bezier(0.4,0,0.2,1); }
+  .score-val { font-size:0.875rem; font-weight:700; min-width:36px; text-align:right; }
+  .val-pos { color:var(--teal); }
+  .val-neg { color:var(--accent); }
+
+  /* Tier pills */
+  .tier-pills { display:flex; gap:10px; flex-wrap:wrap; margin-top:1.2rem; }
+  .tier-pill { display:flex; align-items:center; gap:8px; padding:0.6rem 1.2rem; border-radius:100px; font-size:0.85rem; font-weight:500; border:2px solid; cursor:pointer; transition:transform 0.2s, box-shadow 0.2s; }
+  .tier-pill:hover { transform:scale(1.06); box-shadow:0 4px 16px rgba(0,0,0,0.1); }
+  .tier-pill:active { transform:scale(0.97); }
+  .tier-pill.urgent    { background:#fff0ee; border-color:var(--accent);  color:#c4291b; }
+  .tier-pill.important { background:#fff8e6; border-color:var(--accent2); color:#905200; }
+  .tier-pill.noise     { background:#f5f5f5; border-color:#ccc;           color:#666; }
+  .tier-dot { width:9px; height:9px; border-radius:50%; }
+  .tier-pill.urgent    .tier-dot { background:var(--accent); }
+  .tier-pill.important .tier-dot { background:var(--accent2); }
+  .tier-pill.noise     .tier-dot { background:#aaa; }
+
+  /* Notif mock */
+  .notif-mock { display:flex; flex-direction:column; gap:8px; max-width:420px; margin-top:0.75rem; }
+  .notif-item { display:flex; align-items:flex-start; gap:12px; background:#fff; border:2px solid; border-radius:14px; padding:0.85rem 1.1rem; transition:transform 0.2s, box-shadow 0.2s; cursor:pointer; }
+  .notif-item:hover { transform:translateX(6px); box-shadow:0 4px 20px rgba(0,0,0,0.08); }
+  .notif-item:active { transform:translateX(2px); }
+  .notif-item.urgent { border-color:var(--accent); }
+  .notif-icon-wrap { width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
+  .notif-icon-wrap.red { background:#fff0ee; }
+  .notif-body { flex:1; }
+  .notif-title { font-size:0.88rem; font-weight:500; color:var(--ink); line-height:1.4; }
+  .notif-meta { font-size:0.75rem; color:var(--ink); opacity:0.45; margin-top:3px; }
+  .notif-badge { font-size:0.7rem; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; padding:2px 8px; border-radius:100px; flex-shrink:0; align-self:center; }
+  .badge-red   { background:var(--accent);  color:#fff; }
+  .badge-amber { background:var(--accent2); color:#fff; }
+
+  /* Batch summary */
+  .batch-summary { background:#fff; border:2px solid var(--accent2); border-radius:14px; padding:1rem 1.2rem; max-width:420px; margin-top:0.75rem; transition:box-shadow 0.2s, transform 0.2s; cursor:default; }
+  .batch-summary:hover { box-shadow:0 6px 24px rgba(255,140,0,0.18); transform:translateY(-2px); }
+  .batch-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; }
+  .batch-count-big { font-family:var(--font-display); font-size:1.5rem; font-weight:800; color:var(--ink); }
+  .batch-time-label { font-size:0.75rem; color:var(--ink); opacity:0.45; }
+  .batch-rows { display:flex; flex-direction:column; gap:4px; }
+  .batch-group-row { display:flex; align-items:center; gap:10px; padding:7px 8px; border-radius:8px; transition:background 0.15s; cursor:pointer; }
+  .batch-group-row:hover { background:#fff8f0; }
+  .batch-group-row:active { background:#ffe8cc; }
+  .batch-group-name { flex:1; font-size:0.875rem; color:var(--ink); opacity:0.7; }
+  .batch-group-pill { font-size:0.75rem; font-weight:700; background:#fff4e6; color:#905200; padding:2px 10px; border-radius:100px; border:1px solid #ffcc80; }
+
+  /* Noise EOD summary */
+  .noise-summary { background:#fff; border:2px solid #d0d0d0; border-radius:14px; padding:1rem 1.2rem; max-width:420px; margin-top:0.75rem; transition:box-shadow 0.2s, transform 0.2s; cursor:default; }
+  .noise-summary:hover { box-shadow:0 6px 24px rgba(0,0,0,0.09); transform:translateY(-2px); }
+  .noise-count-big { font-family:var(--font-display); font-size:1.5rem; font-weight:800; color:#555; }
+  .noise-breakdown { display:flex; flex-direction:column; gap:3px; margin-top:0.75rem; }
+  .noise-item { display:flex; align-items:center; gap:10px; padding:5px 8px; border-radius:8px; font-size:0.85rem; color:var(--ink); opacity:0.55; }
+  .noise-item-dot { width:6px; height:6px; border-radius:50%; background:#bbb; flex-shrink:0; }
+  .badge-noise { background:#e0e0e0; color:#555; }
+
+
+  /* FEATURES */
+  .features-strip { background:var(--ink); padding:5rem 3rem; }
+  .features-inner { max-width:1100px; margin:0 auto; }
+  .features-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:1.5rem; margin-top:3rem; }
+  .feature-card { border:1.5px solid rgba(245,243,238,0.1); border-radius:16px; padding:1.5rem; cursor:pointer; transition:border-color 0.25s, transform 0.2s, background 0.25s; }
+  .feature-card:hover { border-color:rgba(255,61,46,0.6); transform:translateY(-5px); background:rgba(255,255,255,0.05); }
+  .feature-card:active { transform:translateY(-2px); }
+  .feature-icon { width:42px; height:42px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:20px; margin-bottom:1rem; }
+  .feature-title { font-family:var(--font-display); font-size:1.05rem; font-weight:800; color:var(--paper); margin-bottom:0.5rem; letter-spacing:-0.02em; }
+  .feature-desc { font-size:0.85rem; color:var(--paper); opacity:0.5; line-height:1.6; }
+  .features-strip .section-label { color:var(--accent); }
+  .features-strip .section-title { color:var(--paper); margin-bottom:0; }
+
+  /* CTA */
+  .cta-section { background:var(--ink); color:var(--paper); text-align:center; padding:7rem 2rem; border-top:1px solid rgba(255,255,255,0.07); }
+  .cta-section .section-label { color:var(--accent); }
+  .cta-section h2 { font-family:var(--font-display); font-size:clamp(2.2rem,5vw,4rem); font-weight:800; letter-spacing:-0.04em; line-height:1; margin-bottom:1.2rem; color:var(--paper); }
+  .cta-section h2 .hl { color:var(--teal); }
+  .cta-section > p { font-size:1rem; opacity:0.5; max-width:380px; margin:0 auto 2.5rem; line-height:1.6; }
+  .email-row { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-bottom:1rem; }
+  .email-input { padding:0.85rem 1.4rem; border-radius:100px; border:1.5px solid rgba(245,243,238,0.2); background:rgba(255,255,255,0.07); color:var(--paper); font-family:var(--font-body); font-size:0.95rem; width:280px; outline:none; transition:border-color 0.2s, background 0.2s; }
+  .email-input::placeholder { color:rgba(245,243,238,0.3); }
+  .email-input:focus { border-color:var(--teal); background:rgba(255,255,255,0.1); }
+  .email-success { display:none; font-size:0.9rem; color:var(--teal); margin-top:0.5rem; font-weight:500; }
+
+  /* MODAL */
+  .modal-overlay { display:none; position:fixed; inset:0; z-index:200; background:rgba(10,10,15,0.65); align-items:center; justify-content:center; }
+  .modal-overlay.open { display:flex; }
+  .modal { background:var(--paper); border-radius:20px; padding:2.5rem; max-width:420px; width:90%; position:relative; animation:modalIn 0.3s cubic-bezier(0.34,1.56,0.64,1) both; }
+  @keyframes modalIn { from{opacity:0;transform:scale(0.85) translateY(20px)} to{opacity:1;transform:scale(1) translateY(0)} }
+  .modal-close { position:absolute; top:1rem; right:1rem; background:none; border:none; font-size:1.3rem; cursor:pointer; color:var(--ink); opacity:0.4; transition:opacity 0.2s, background 0.2s; width:32px; height:32px; display:flex; align-items:center; justify-content:center; border-radius:50%; line-height:1; }
+  .modal-close:hover { opacity:1; background:rgba(0,0,0,0.07); }
+  .modal h3 { font-family:var(--font-display); font-size:1.6rem; font-weight:800; letter-spacing:-0.03em; margin-bottom:0.5rem; }
+  .modal > p { font-size:0.9rem; color:var(--ink); opacity:0.6; margin-bottom:1.5rem; line-height:1.6; }
+  .modal-input { width:100%; padding:0.8rem 1.2rem; border-radius:12px; border:1.5px solid var(--border); background:#fff; font-family:var(--font-body); font-size:0.95rem; outline:none; transition:border-color 0.2s; margin-bottom:0.75rem; display:block; }
+  .modal-input:focus { border-color:var(--accent); }
+  .modal-btn { width:100%; padding:0.9rem; border-radius:12px; background:var(--accent); color:#fff; border:none; font-family:var(--font-body); font-size:1rem; font-weight:500; cursor:pointer; transition:background 0.2s, transform 0.15s; }
+  .modal-btn:hover { background:#e62d1e; transform:scale(1.02); }
+  .modal-btn:active { transform:scale(0.97); }
+  .modal-success { display:none; text-align:center; padding:1.5rem 0 0.5rem; }
+  .modal-success .check { font-size:3rem; margin-bottom:0.75rem; }
+  .modal-success p { color:var(--teal); font-weight:500; font-size:1rem; opacity:1; }
+
+  /* TOAST */
+  .toast { position:fixed; bottom:2rem; left:50%; transform:translateX(-50%) translateY(80px); background:var(--ink); color:var(--paper); padding:0.75rem 1.6rem; border-radius:100px; font-size:0.875rem; font-weight:500; z-index:300; transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1), opacity 0.4s; opacity:0; pointer-events:none; white-space:nowrap; }
+  .toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
+
+  /* FOOTER */
+  footer { background:var(--ink2); color:var(--paper); display:flex; align-items:center; justify-content:space-between; padding:1.5rem 3rem; font-size:0.8rem; opacity:0.85; }
+  footer a { color:var(--paper); opacity:0.5; text-decoration:none; transition:opacity 0.2s; }
+  footer a:hover { opacity:1; }
+
+
+  /* TRIAGE */
+  #triage-section { display:block; padding:2.5rem 3rem 0; max-width:1100px; margin:0 auto; }
+  .triage-header { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem; }
+  .triage-title { font-family:var(--font-display); font-size:1.8rem; font-weight:800; letter-spacing:-0.03em; color:var(--ink); }
+  .triage-pills { display:flex; gap:8px; flex-wrap:wrap; }
+  .triage-pill { display:flex; align-items:center; gap:6px; padding:0.35rem 0.85rem; border-radius:100px; font-size:0.78rem; font-weight:500; border:1.5px solid; }
+  .triage-pill.on  { background:#e6fff8; border-color:var(--teal); color:#007a55; }
+  .triage-pill.off { background:#f5f5f5; border-color:#ccc; color:#888; }
+  .triage-pill-dot { width:6px; height:6px; border-radius:50%; }
+  .triage-pill.on  .triage-pill-dot { background:var(--teal); }
+  .triage-pill.off .triage-pill-dot { background:#ccc; }
+  .triage-loading { text-align:center; padding:3rem 1rem; color:var(--ink); opacity:0.5; font-size:0.95rem; }
+  .triage-spinner { width:28px; height:28px; border:3px solid var(--border); border-top-color:var(--accent); border-radius:50%; animation:spin 0.8s linear infinite; margin:0 auto 1rem; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  .triage-group-label { font-size:0.7rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--ink); opacity:0.35; margin:1.5rem 0 0.75rem; display:flex; align-items:center; gap:8px; }
+  .triage-group-label::after { content:''; flex:1; height:1px; background:var(--border); }
+  .triage-feed { display:flex; flex-direction:column; gap:8px; max-width:680px; }
+  .triage-card { display:flex; align-items:flex-start; gap:12px; background:#fff; border:1.5px solid var(--border); border-radius:14px; padding:0.9rem 1.1rem; cursor:pointer; transition:transform 0.2s, box-shadow 0.2s, border-color 0.2s; }
+  .triage-card:hover { transform:translateX(5px); box-shadow:0 4px 18px rgba(0,0,0,0.07); }
+  .triage-card.is-urgent { border-color:var(--accent); border-width:2px; }
+  .triage-card.is-important { border-color:var(--accent2); }
+  .triage-icon { width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0; }
+  .triage-icon.gmail  { background:#fff0ee; }
+  .triage-icon.slack  { background:#f0edfe; }
+  .triage-icon.amber  { background:#fff8e6; }
+  .triage-body { flex:1; min-width:0; }
+  .triage-card-title { font-size:0.875rem; font-weight:500; color:var(--ink); line-height:1.4; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .triage-card-meta  { font-size:0.75rem; color:var(--ink); opacity:0.4; margin-top:3px; }
+  .triage-badge { font-size:0.68rem; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; padding:2px 8px; border-radius:100px; flex-shrink:0; align-self:center; white-space:nowrap; }
+  .triage-badge.urgent    { background:var(--accent);  color:#fff; }
+  .triage-badge.important { background:var(--accent2); color:#fff; }
+  .triage-noise-footer { max-width:680px; background:#f8f8f8; border:1.5px solid #ddd; border-radius:14px; padding:1rem 1.2rem; display:flex; align-items:center; gap:14px; margin-top:0.5rem; }
+  .triage-noise-num  { font-family:var(--font-display); font-size:1.8rem; font-weight:800; color:#888; flex-shrink:0; }
+  .triage-noise-text { font-size:0.875rem; color:var(--ink); opacity:0.55; line-height:1.5; }
+  .triage-noise-text strong { color:#555; opacity:1; }
+  .triage-empty { font-size:0.9rem; color:var(--ink); opacity:0.4; padding:0.5rem 0; }
+  .triage-demo-label { font-size:0.78rem; color:var(--accent); font-weight:500; margin-top:0.25rem; letter-spacing:0.01em; }
+  @media(max-width:640px) { #triage-section { padding:2rem 1.25rem 0; } }
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes pulse  { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.4)} }
+
+  @media (max-width:640px) {
+    nav { padding:1rem 1.25rem; }
+    .nav-links { display:none; }
+    .section { padding:4rem 1.25rem; }
+    .features-strip { padding:4rem 1.25rem; }
+    .step-row { grid-template-columns:52px 1fr; gap:0 1rem; }
+    .step-row::before { left:24px; }
+    footer { flex-direction:column; gap:0.5rem; text-align:center; padding:1.5rem; }
+    #dashboard { padding: 2rem 1.25rem 0; }
+    .dash-stats { flex-direction:column; }
+  }
+</style>
+</head>
+<body>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">&#x2715;</button>
+    <div id="modal-form">
+      <h3>Get early access</h3>
+      <p>Be first in line. We'll reach out as soon as Signal is ready for your inbox.</p>
+      <input class="modal-input" type="text" id="modal-name" placeholder="Your name">
+      <input class="modal-input" type="email" id="modal-email" placeholder="Work email">
+      <button class="modal-btn" onclick="submitModal()">Join the waitlist &rarr;</button>
+    </div>
+    <div class="modal-success" id="modal-ok">
+      <div class="check">&#10003;</div>
+      <p>You're on the list!<br>We'll be in touch very soon.</p>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="#" class="nav-logo">sig<span>&middot;</span>nal</a>
+  <ul class="nav-links">
+    <li><a href="#how">How it works</a></li>
+    <li><a href="#scoring">Scoring</a></li>
+    <li><a href="#product">The product</a></li>
+  </ul>
+  <button class="nav-cta" onclick="openModal()">Get early access</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <h1>Stop drowning in<br><span class="highlight">47 pings</span></h1>
+  <p class="hero-sub">One smart layer on top of Slack and Gmail. No rules to configure. Just the 5 things that actually matter, right now.</p>
+  <div class="hero-stats">
+    <div class="stat-pill"><div><div class="big red">70+</div><div class="small">daily notifications</div></div></div>
+    <div class="stat-arrow">&rarr;</div>
+    <div class="stat-pill"><div><div class="big green">5</div><div class="small">things that matter</div></div></div>
+    <div class="stat-arrow">+</div>
+    <div class="stat-pill"><div><div class="big" style="color:#7b5ea7">1</div><div class="small">clean digest later</div></div></div>
+  </div>
+  <div class="hero-cta-row">
+    <a href="#how" class="btn-primary">See how it works</a>
+    <button class="btn-ghost" onclick="openModal()">Get early access</button>
+  </div>
+</section>
+
+<!-- TRIAGE -->
+<div id="triage-section">
+  <div class="triage-header">
+    <div>
+      <div class="triage-title">Your inbox, triaged</div>
+      <div class="triage-demo-label" id="triage-demo-label">Demo &mdash; connect Gmail for your real inbox</div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+      <div class="triage-pills" id="triage-pills"></div>
+      <button class="nav-cta" id="triage-connect-btn" onclick="document.getElementById('how').scrollIntoView({behavior:'smooth'});setTimeout(()=>{document.querySelector('.step-row').click();},400);" style="font-size:0.8rem;padding:0.5rem 1.1rem;">Connect Gmail &rarr;</button>
+    </div>
+  </div>
+  <div id="triage-loading" style="display:none;">
+    <div class="triage-spinner"></div>
+    <p>Fetching your messages&hellip;</p>
+  </div>
+  <div id="triage-view">
+    <div id="triage-urgent"></div>
+    <div id="triage-important"></div>
+    <div id="triage-noise"></div>
+  </div>
+</div>
+
+<!-- TICKER -->
+<div class="ticker-wrap" title="Hover to pause">
+  <div class="ticker-inner">
+    <span class="ticker-item">Cut through the noise <span>&middot;</span></span>
+    <span class="ticker-item">Real-time urgent alerts <span>&middot;</span></span>
+    <span class="ticker-item">No config required <span>&middot;</span></span>
+    <span class="ticker-item">Gmail + Slack connected <span>&middot;</span></span>
+    <span class="ticker-item">Rules-based scoring <span>&middot;</span></span>
+    <span class="ticker-item">Batched digest every 1&ndash;2 hours <span>&middot;</span></span>
+    <span class="ticker-item">Daily noise recap at 5 PM <span>&middot;</span></span>
+    <span class="ticker-item">Cut through the noise <span>&middot;</span></span>
+    <span class="ticker-item">Real-time urgent alerts <span>&middot;</span></span>
+    <span class="ticker-item">No config required <span>&middot;</span></span>
+    <span class="ticker-item">Gmail + Slack connected <span>&middot;</span></span>
+    <span class="ticker-item">Rules-based scoring <span>&middot;</span></span>
+    <span class="ticker-item">Batched digest every 1&ndash;2 hours <span>&middot;</span></span>
+    <span class="ticker-item">Daily noise recap at 5 PM <span>&middot;</span></span>
+  </div>
+</div>
+
+<div id="how" style="max-width:1100px;margin:0 auto;padding:0 3rem;"><hr class="divider" style="margin-top:4rem;"></div>
+
+<!-- HOW IT WORKS -->
+<section class="section">
+  <p class="section-label">Step-by-step flow</p>
+  <h2 class="section-title">How it actually works in real life</h2>
+  <div class="steps-grid">
+
+    <div class="step-row" onclick="toggleStep(this)">
+      <div class="step-left"><div class="step-num s1">1</div></div>
+      <div class="step-content">
+        <span class="step-tag tag-red">Day 1 only</span>
+        <h3 class="step-title">Connect your accounts</h3>
+        <p class="step-desc">Two connections, that's it. No rules to write, no filters to configure &mdash; that kills adoption before you even start.</p>
+        <div class="step-hint"><span class="hint-arrow">&darr;</span> Click to expand</div>
+        <div class="step-body">
+          <div class="mini-cards">
+            <div class="mini-card" id="gmail-card" onclick="connectGmail(event)">
+              <div class="mini-card-dot" id="gmail-dot"></div>
+              <span id="gmail-label">Gmail &mdash; inbox &amp; labels</span>
+            </div>
+            <div class="mini-card" id="slack-card" onclick="connectSlack(event)">
+              <div class="mini-card-dot" id="slack-dot"></div>
+              <span id="slack-label">Slack &mdash; DMs &amp; channels</span>
+            </div>
+          </div>
+          <p style="font-size:0.8rem;color:var(--accent);font-weight:500;margin-top:1rem;">No "set rules" nonsense. Zero config. Just connect.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="step-row" onclick="toggleStep(this)">
+      <div class="step-left"><div class="step-num s2">2a</div></div>
+      <div class="step-content">
+        <span class="step-tag tag-green">Pipeline &mdash; extract</span>
+        <h3 class="step-title">Extract signals from every message</h3>
+        <p class="step-desc">Every incoming notification passes through a lightweight signal extractor before any decision is made.</p>
+        <div class="step-hint"><span class="hint-arrow">&darr;</span> Click to expand</div>
+        <div class="step-body">
+          <div class="mini-cards">
+            <div class="mini-card" onclick="showToast('Sender weight applied'); event.stopPropagation();"><div class="mini-card-dot dot-amber"></div>Who sent it?</div>
+            <div class="mini-card" onclick="showToast('Keyword scan active'); event.stopPropagation();"><div class="mini-card-dot dot-amber"></div>Keywords: "urgent", "ASAP"</div>
+            <div class="mini-card" onclick="showToast('Channel type detected'); event.stopPropagation();"><div class="mini-card-dot dot-amber"></div>Channel: DM vs group</div>
+            <div class="mini-card" onclick="showToast('Time context logged'); event.stopPropagation();"><div class="mini-card-dot dot-amber"></div>Time: work hours vs late</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="scoring" class="step-row" onclick="toggleStep(this)">
+      <div class="step-left"><div class="step-num s3">2b</div></div>
+      <div class="step-content">
+        <span class="step-tag tag-amber">Pipeline &mdash; score</span>
+        <h3 class="step-title">Score it, classify it</h3>
+        <p class="step-desc">A simple weighted scoring model &mdash; fast, transparent, adjustable. Every notification gets a score. Every score gets a lane.</p>
+        <div class="step-hint"><span class="hint-arrow">&darr;</span> Click to expand</div>
+        <div class="step-body">
+          <div class="score-table">
+            <div class="score-row" onclick="showToast('+50 pts: Boss DM detected &#128308;'); event.stopPropagation();">
+              <div class="score-label">Boss DM</div>
+              <div class="score-bar-wrap"><div class="score-bar-fill" style="background:var(--teal)" data-w="100"></div></div>
+              <div class="score-val val-pos">+50</div>
+            </div>
+            <div class="score-row" onclick="showToast('+30 pts: Direct mention found'); event.stopPropagation();">
+              <div class="score-label">Direct @mention</div>
+              <div class="score-bar-wrap"><div class="score-bar-fill" style="background:#5fcaaa" data-w="60"></div></div>
+              <div class="score-val val-pos">+30</div>
+            </div>
+            <div class="score-row" onclick="showToast('+20 pts: Keyword "urgent" flagged'); event.stopPropagation();">
+              <div class="score-label">Contains "urgent"</div>
+              <div class="score-bar-wrap"><div class="score-bar-fill" style="background:#9de4cf" data-w="40"></div></div>
+              <div class="score-val val-pos">+20</div>
+            </div>
+            <div class="score-row" onclick="showToast('-40 pts: Newsletter deprioritised'); event.stopPropagation();">
+              <div class="score-label">Newsletter / digest</div>
+              <div class="score-bar-wrap"><div class="score-bar-fill" style="background:var(--accent)" data-w="80"></div></div>
+              <div class="score-val val-neg">&minus;40</div>
+            </div>
+          </div>
+          <div class="tier-pills">
+            <div class="tier-pill urgent"    onclick="showToast('Urgent: push notification fires now &#128308;'); event.stopPropagation();"><div class="tier-dot"></div>Urgent &mdash; score &gt; 60</div>
+            <div class="tier-pill important" onclick="showToast('Important: added to next 1&ndash;2 hr batch &#128993;'); event.stopPropagation();"><div class="tier-dot"></div>Important &mdash; 30 to 60</div>
+            <div class="tier-pill noise"     onclick="showToast('Noise: silent all day &mdash; daily digest at 5 PM &#9898;'); event.stopPropagation();"><div class="tier-dot"></div>Noise &mdash; below 30 &rarr; daily digest</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="product" class="step-row" onclick="toggleStep(this)">
+      <div class="step-left"><div class="step-num s4">3a</div></div>
+      <div class="step-content">
+        <span class="step-tag tag-violet">Real-time &mdash; urgent only</span>
+        <h3 class="step-title">Instant alerts &mdash; only what counts</h3>
+        <p class="step-desc">Only score &gt; 60 breaks through as a real-time push. Everything else waits.</p>
+        <div class="step-hint"><span class="hint-arrow">&darr;</span> Click to expand</div>
+        <div class="step-body">
+          <div class="notif-mock">
+            <div class="notif-item urgent" onclick="showToast('Opening Slack thread&hellip;'); event.stopPropagation();">
+              <div class="notif-icon-wrap red">&#128172;</div>
+              <div class="notif-body">
+                <div class="notif-title">Your manager mentioned you in Slack</div>
+                <div class="notif-meta">Slack &middot; #product &middot; 2 min ago</div>
+              </div>
+              <div class="notif-badge badge-red">Urgent</div>
+            </div>
+            <div class="notif-item urgent" onclick="showToast('Opening Gmail&hellip;'); event.stopPropagation();">
+              <div class="notif-icon-wrap red">&#128231;</div>
+              <div class="notif-body">
+                <div class="notif-title">Sarah (CEO): "Can we talk today? Re: launch"</div>
+                <div class="notif-meta">Gmail &middot; Direct &middot; 4 min ago</div>
+              </div>
+              <div class="notif-badge badge-red">Urgent</div>
+            </div>
+          </div>
+          <p style="font-size:0.8rem;color:var(--ink);opacity:0.45;margin-top:0.75rem;font-style:italic;">Tap any alert to open it.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="step-row" onclick="toggleStep(this)">
+      <div class="step-left"><div class="step-num s3">3b</div></div>
+      <div class="step-content">
+        <span class="step-tag tag-amber">Important &mdash; every 1&ndash;2 hours</span>
+        <h3 class="step-title">Grouped digest &mdash; the rest, organised</h3>
+        <p class="step-desc">Everything in the Important tier lands in a tidy batch every 1&ndash;2 hours, grouped by project or source. No interruptions, no chaos.</p>
+        <div class="step-hint"><span class="hint-arrow">&darr;</span> Click to expand</div>
+        <div class="step-body">
+          <div class="batch-summary" onclick="event.stopPropagation();">
+            <div class="batch-header">
+              <div>
+                <div class="batch-count-big">12 updates</div>
+                <div class="batch-time-label">worth checking &middot; since 10:00 AM</div>
+              </div>
+              <div class="notif-badge badge-amber">Digest</div>
+            </div>
+            <div class="batch-rows">
+              <div class="batch-group-row" onclick="showToast('Opening Project A &mdash; 5 threads')"><div class="batch-group-name">Project A threads</div><div class="batch-group-pill">5</div></div>
+              <div class="batch-group-row" onclick="showToast('Opening 4 emails')"><div class="batch-group-name">Emails</div><div class="batch-group-pill">4</div></div>
+              <div class="batch-group-row" onclick="showToast('Opening 3 Slack threads')"><div class="batch-group-name">Slack threads</div><div class="batch-group-pill">3</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step-row" onclick="toggleStep(this)">
+      <div class="step-left"><div class="step-num" style="background:#f0f0f0;border-color:#ccc;color:#666;width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:1rem;font-weight:800;flex-shrink:0;position:relative;z-index:1;border:2px solid;">3c</div></div>
+      <div class="step-content">
+        <span class="step-tag" style="background:#f0f0f0;color:#666;border:1px solid #ccc;">Noise &mdash; end of day</span>
+        <h3 class="step-title">Noise goes silent. One recap at day's end.</h3>
+        <p class="step-desc">Low-priority notifications are muted all day. At 5 PM, Signal sends one calm summary of everything you safely skipped.</p>
+        <div class="step-hint"><span class="hint-arrow">&darr;</span> Click to expand</div>
+        <div class="step-body">
+          <div class="noise-summary" onclick="event.stopPropagation();">
+            <div class="batch-header">
+              <div>
+                <div class="noise-count-big">38 ignored</div>
+                <div class="batch-time-label">low-priority &middot; today &middot; 5:00 PM</div>
+              </div>
+              <div class="notif-badge badge-noise">Noise</div>
+            </div>
+            <div class="noise-breakdown">
+              <div class="noise-item"><div class="noise-item-dot"></div>14 newsletters &amp; digests</div>
+              <div class="noise-item"><div class="noise-item-dot"></div>11 group Slack threads</div>
+              <div class="noise-item"><div class="noise-item-dot"></div>9 CC'd emails</div>
+              <div class="noise-item"><div class="noise-item-dot"></div>4 automated alerts</div>
+            </div>
+          </div>
+          <p style="font-size:0.8rem;color:var(--ink);opacity:0.4;margin-top:0.75rem;font-style:italic;">Nothing lost. Just 38 things that didn't need you today.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FEATURES -->
+<div class="features-strip">
+  <div class="features-inner">
+    <p class="section-label">Why Signal</p>
+    <h2 class="section-title">Built for people, not inboxes</h2>
+    <div class="features-grid">
+      <div class="feature-card" onclick="showToast('Connect in under 60 seconds &#9889;')">
+        <div class="feature-icon" style="background:#fff0ee;">&#9889;</div>
+        <div class="feature-title">Zero config</div>
+        <div class="feature-desc">Connect in under 60 seconds. No rule-writing, no onboarding, no friction.</div>
+      </div>
+      <div class="feature-card" onclick="showToast('Every score decision is explainable &#127919;')">
+        <div class="feature-icon" style="background:#e6fff8;">&#127919;</div>
+        <div class="feature-title">Transparent scoring</div>
+        <div class="feature-desc">No AI black box &mdash; every decision is explainable and tuneable from day one.</div>
+      </div>
+      <div class="feature-card" onclick="showToast('Your flow state stays intact &#128336;')">
+        <div class="feature-icon" style="background:#fff4e6;">&#128336;</div>
+        <div class="feature-title">Timed batches</div>
+        <div class="feature-desc">Everything non-urgent arrives in a clean digest. Your focus stays unbroken.</div>
+      </div>
+      <div class="feature-card" onclick="showToast('38 notifications silenced today &#128263;')">
+        <div class="feature-icon" style="background:#f0edfe;">&#128263;</div>
+        <div class="feature-title">Daily noise digest</div>
+        <div class="feature-desc">Noise stays silent all day. At 5 PM, one calm recap &mdash; everything you safely skipped, nothing lost.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CTA -->
+<section class="cta-section">
+  <p class="section-label">Early access</p>
+  <h2>Ready to get your<br><span class="hl">focus back?</span></h2>
+  <p>Gmail + Slack integration. 5-minute setup. No rule-writing required.</p>
+  <div class="email-row">
+    <input class="email-input" type="email" id="hero-email" placeholder="Enter your work email">
+    <button class="btn-primary" style="padding:0.85rem 1.8rem;" onclick="inlineSubmit()">Join waitlist</button>
+  </div>
+  <div class="email-success" id="email-ok">&#127881; You're on the list &mdash; we'll be in touch soon!</div>
+  <div style="margin-top:1.25rem;">
+    <button class="btn-ghost" style="color:#f5f3ee;border-color:rgba(245,243,238,0.25);" onclick="openModal()">Learn more about Signal</button>
+  </div>
+</section>
+
+<footer>
+  <span>&copy; 2025 Signal. All rights reserved.</span>
+  <div style="display:flex;gap:1.5rem;">
+    <a href="#" onclick="showToast('Privacy policy coming soon'); return false;">Privacy</a>
+    <a href="#" onclick="showToast('Terms coming soon'); return false;">Terms</a>
+    <a href="#" onclick="openModal(); return false;">Contact</a>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+const _sb = supabase.createClient(
+  'https://aovgxslluxrenozowpoo.supabase.co',
+  'sb_publishable_mzKZv2TTtxIZiNGAAtRFZQ_GSMusN_n'
+);
+
+let _tt;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(_tt);
+  _tt = setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+// ── Waitlist ───────────────────────────────────────────────
+async function addToWaitlist(email, name, source) {
+  const { error } = await _sb.from('waitlist').insert({ email, name: name || null, source });
+  if (error && error.code === '23505') return 'already';
+  if (error) throw error;
+  return 'ok';
+}
+
+// ── Connection cards ───────────────────────────────────────
+function setCardConnected(dotId, labelId, cardId, text) {
+  const dot = document.getElementById(dotId), label = document.getElementById(labelId), card = document.getElementById(cardId);
+  if (!dot) return;
+  dot.classList.add('dot-green');
+  label.textContent = '✓ ' + text;
+  card.style.borderColor = 'var(--teal)';
+  card.style.background  = '#e6fff8';
+  card.onclick = e => { e.stopPropagation(); showToast(text + ' already connected ✓'); };
+}
+
+async function connectGmail(e) {
+  e.stopPropagation();
+  const card = document.getElementById('gmail-card');
+  const label = document.getElementById('gmail-label');
+  card.style.opacity = '0.6';
+  label.textContent = 'Connecting…';
+  const { error } = await _sb.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      scopes: 'openid email profile https://www.googleapis.com/auth/gmail.readonly',
+      redirectTo: window.location.href,
+      queryParams: { access_type: 'offline', prompt: 'consent' }
+    }
+  });
+  if (error) {
+    card.style.opacity = '1';
+    label.textContent = 'Gmail — inbox & labels';
+    showToast('Error: ' + error.message);
+  }
+}
+
+// ── Slack OAuth ────────────────────────────────────────────
+// ⚠️  Replace with your Slack App Client ID from api.slack.com/apps
+const SLACK_CLIENT_ID = '11059198762656.11034541340132';
+const SUPABASE_EDGE   = 'https://aovgxslluxrenozowpoo.supabase.co/functions/v1/slack-callback';
+
+function connectSlack(e) {
+  e.stopPropagation();
+  const card = document.getElementById('slack-card');
+  const label = document.getElementById('slack-label');
+  if (label.textContent.startsWith('✓')) { showToast('Slack already connected ✓'); return; }
+  if (SLACK_CLIENT_ID === 'YOUR_SLACK_CLIENT_ID') {
+    showToast('Add your Slack Client ID to index.html first');
+    return;
+  }
+  card.style.opacity = '0.6';
+  label.textContent = 'Connecting…';
+  const userScopes  = 'channels:history,im:history,channels:read,im:read,users:read';
+  const redirectUri = encodeURIComponent(SUPABASE_EDGE);
+  const state       = encodeURIComponent(window.location.origin + window.location.pathname);
+  window.location.href =
+    `https://slack.com/oauth/v2/authorize?client_id=${SLACK_CLIENT_ID}` +
+    `&user_scope=${userScopes}&redirect_uri=${redirectUri}&state=${state}`;
+}
+
+// ── Gmail fetch & score ────────────────────────────────────
+async function fetchGmail(token) {
+  const listRes = await fetch(
+    'https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=40&labelIds=INBOX',
+    { headers: { Authorization: 'Bearer ' + token } }
+  );
+  if (!listRes.ok) throw new Error('Gmail API ' + listRes.status);
+  const { messages = [] } = await listRes.json();
+  const details = await Promise.all(
+    messages.slice(0, 30).map(m =>
+      fetch(
+        `https://gmail.googleapis.com/gmail/v1/users/me/messages/${m.id}?format=metadata` +
+        `&metadataHeaders=From&metadataHeaders=Subject&metadataHeaders=Date`,
+        { headers: { Authorization: 'Bearer ' + token } }
+      ).then(r => r.json())
+    )
+  );
+  return details;
+}
+
+function scoreGmail(msg) {
+  const labels  = msg.labelIds || [];
+  const hdrs    = Object.fromEntries((msg.payload?.headers || []).map(h => [h.name, h.value]));
+  const subject = (hdrs.Subject || '').toLowerCase();
+  const from    = (hdrs.From    || '').toLowerCase();
+  let score = 0;
+
+  if (labels.includes('IMPORTANT'))            score += 40;
+  if (labels.includes('STARRED'))              score += 30;
+  if (labels.includes('CATEGORY_PROMOTIONS'))  score -= 40;
+  if (labels.includes('CATEGORY_SOCIAL'))      score -= 20;
+  if (labels.includes('CATEGORY_FORUMS'))      score -= 25;
+  if (labels.includes('CATEGORY_UPDATES'))     score -= 10;
+
+  ['urgent','asap','action required','deadline','critical'].forEach(w => { if (subject.includes(w)) score += 20; });
+  ['newsletter','unsubscribe','digest','promo','sale','offer','weekly','monthly'].forEach(w => { if (subject.includes(w)) score -= 20; });
+
+  if (/noreply|no-reply|donotreply/.test(from)) score -= 35;
+  if ((hdrs.Subject || '').startsWith('Re:'))   score += 10;
+
+  return Math.max(-100, Math.min(100, score));
+}
+
+function toTriageMsg(gmailMsg) {
+  const hdrs    = Object.fromEntries((gmailMsg.payload?.headers || []).map(h => [h.name, h.value]));
+  const dateStr = hdrs.Date || '';
+  const score   = scoreGmail(gmailMsg);
+  let time = '';
+  try {
+    const d = new Date(dateStr);
+    const diffMin = Math.round((Date.now() - d) / 60000);
+    time = diffMin < 60 ? diffMin + ' min ago' : diffMin < 1440 ? Math.round(diffMin/60) + ' hr ago' : Math.round(diffMin/1440) + 'd ago';
+  } catch {}
+  return { source:'Gmail', from: hdrs.From || 'Unknown', channel:'Gmail', subject: hdrs.Subject || '(no subject)', score, time, id: gmailMsg.id };
+}
+
+// ── Triage render ──────────────────────────────────────────
+let _allMessages = [];
+
+function classify(score) {
+  return score >= 40 ? 'urgent' : score >= 10 ? 'important' : 'noise';
+}
+
+function renderTriage() {
+  const urgEl = document.getElementById('triage-urgent');
+  const impEl = document.getElementById('triage-important');
+  const nseEl = document.getElementById('triage-noise');
+
+  if (_allMessages.length === 0) {
+    urgEl.innerHTML = '';
+    impEl.innerHTML = `<div style="padding:2rem 0;color:var(--ink);opacity:0.35;font-size:0.95rem;">Connect Gmail or Slack above to see your inbox triaged here in real time.</div>`;
+    nseEl.innerHTML = '';
+    document.getElementById('triage-pills').innerHTML =
+      `<div class="triage-pill off"><div class="triage-pill-dot"></div>Gmail</div>` +
+      `<div class="triage-pill off"><div class="triage-pill-dot"></div>Slack</div>`;
+    return;
+  }
+
+  const sorted    = [..._allMessages].sort((a, b) => b.score - a.score);
+  const urgent    = sorted.filter(m => classify(m.score) === 'urgent');
+  const important = sorted.filter(m => classify(m.score) === 'important');
+  const noise     = sorted.filter(m => classify(m.score) === 'noise');
+
+  function cardHTML(m) {
+    const cls   = classify(m.score);
+    const icon  = m.source === 'Slack' ? '💬' : '✉️';
+    const icls  = m.source === 'Slack' ? 'slack' : cls === 'urgent' ? 'gmail' : 'amber';
+    const badge = cls === 'urgent' ? '<span class="triage-badge urgent">Urgent</span>' : '<span class="triage-badge important">Important</span>';
+    return `<div class="triage-card is-${cls}" onclick="showToast('Opening ${m.source}: ${m.subject.substring(0,40).replace(/'/g,'&apos;')}…')">
+      <div class="triage-icon ${icls}">${icon}</div>
+      <div class="triage-body">
+        <div class="triage-card-title">${escHtml(m.subject)}</div>
+        <div class="triage-card-meta">${escHtml(m.source)} · ${escHtml(m.from.replace(/<.*>/,'').trim())} · ${m.time}</div>
+      </div>
+      ${badge}
+    </div>`;
+  }
+
+  const urgEl = document.getElementById('triage-urgent');
+  const impEl = document.getElementById('triage-important');
+  const nseEl = document.getElementById('triage-noise');
+
+  urgEl.innerHTML = urgent.length
+    ? `<div class="triage-group-label">🔴 Urgent — ${urgent.length} item${urgent.length>1?'s':''}</div><div class="triage-feed">${urgent.map(cardHTML).join('')}</div>`
+    : '';
+
+  impEl.innerHTML = important.length
+    ? `<div class="triage-group-label">🟡 Important — ${important.length} item${important.length>1?'s':''}</div><div class="triage-feed">${important.map(cardHTML).join('')}</div>`
+    : '';
+
+  if (noise.length) {
+    const breakdown = {};
+    noise.forEach(m => { breakdown[m.source] = (breakdown[m.source] || 0) + 1; });
+    const btext = Object.entries(breakdown).map(([k,v]) => `${v} from ${k}`).join(' · ');
+    nseEl.innerHTML = `<div class="triage-group-label">⚪ Noise — filtered silently</div>
+      <div class="triage-noise-footer">
+        <div class="triage-noise-num">${noise.length}</div>
+        <div class="triage-noise-text"><strong>Low-priority — you won't be interrupted.</strong><br>${btext}</div>
+      </div>`;
+  } else {
+    nseEl.innerHTML = '';
+  }
+
+  const pills = document.getElementById('triage-pills');
+  const gmailOn = _allMessages.some(m => m.source === 'Gmail');
+  const slackOn = _allMessages.some(m => m.source === 'Slack');
+  pills.innerHTML =
+    `<div class="triage-pill ${gmailOn?'on':'off'}"><div class="triage-pill-dot"></div>Gmail</div>` +
+    `<div class="triage-pill ${slackOn?'on':'off'}"><div class="triage-pill-dot"></div>Slack</div>`;
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function setTriageLoading(on) {
+  document.getElementById('triage-loading').style.display = on ? 'block' : 'none';
+  document.getElementById('triage-view').style.display    = on ? 'none'  : 'block';
+}
+
+function updateTriageStatus() {
+  const gmailOn = _allMessages.some(m => m.source === 'Gmail');
+  const slackOn = _allMessages.some(m => m.source === 'Slack');
+  const lbl = document.getElementById('triage-demo-label');
+  const btn = document.getElementById('triage-connect-btn');
+  if (lbl) lbl.textContent = (gmailOn || slackOn) ? 'Live — showing your real inbox' : 'Connect Gmail or Slack to see your real inbox triaged';
+  if (btn) btn.style.display = (gmailOn && slackOn) ? 'none' : '';
+}
+
+async function loadGmailTriage(token) {
+  setCardConnected('gmail-dot', 'gmail-label', 'gmail-card', 'Gmail — connected');
+  setTriageLoading(true);
+  try {
+    const raw  = await fetchGmail(token);
+    const msgs = raw.filter(m => !m.error).map(toTriageMsg);
+    _allMessages = [...msgs, ..._allMessages.filter(m => m.source !== 'Gmail')];
+    renderTriage();
+    updateTriageStatus();
+    showToast('Gmail loaded — ' + msgs.length + ' messages triaged');
+  } catch (err) {
+    showToast('Gmail fetch failed: ' + err.message);
+  } finally {
+    setTriageLoading(false);
+  }
+}
+
+// ── Slack fetch & score ────────────────────────────────────
+async function loadSlackTriage(token) {
+  setCardConnected('slack-dot', 'slack-label', 'slack-card', 'Slack — connected');
+  setTriageLoading(true);
+  try {
+    const msgs = await fetchSlack(token);
+    _allMessages = [..._allMessages.filter(m => m.source !== 'Slack'), ...msgs];
+    renderTriage();
+    updateTriageStatus();
+    showToast('Slack loaded — ' + msgs.length + ' messages triaged');
+  } catch (err) {
+    showToast('Slack fetch failed: ' + err.message);
+  } finally {
+    setTriageLoading(false);
+  }
+}
+
+async function fetchSlack(token) {
+  const me = await fetch('https://slack.com/api/auth.test', { headers: { Authorization: 'Bearer ' + token } }).then(r => r.json());
+  const myId = me.user_id || '';
+
+  const [pubRes, dmRes] = await Promise.all([
+    fetch('https://slack.com/api/conversations.list?types=public_channel,private_channel&limit=20&exclude_archived=true', { headers: { Authorization: 'Bearer ' + token } }).then(r => r.json()),
+    fetch('https://slack.com/api/conversations.list?types=im&limit=15', { headers: { Authorization: 'Bearer ' + token } }).then(r => r.json()),
+  ]);
+
+  const channels = [...(pubRes.channels || []), ...(dmRes.channels || [])];
+  const since    = ((Date.now() / 1000) - 86400).toFixed(0);
+  const items    = [];
+
+  await Promise.all(channels.slice(0, 15).map(async ch => {
+    try {
+      const res = await fetch(
+        `https://slack.com/api/conversations.history?channel=${ch.id}&limit=8&oldest=${since}`,
+        { headers: { Authorization: 'Bearer ' + token } }
+      ).then(r => r.json());
+      if (res.ok) (res.messages || []).filter(m => m.type === 'message' && !m.subtype).forEach(m => items.push({ m, ch, myId }));
+    } catch {}
+  }));
+
+  return items.map(({ m, ch, myId: uid }) => {
+    let score = 0;
+    const text = (m.text || '').toLowerCase();
+    if (ch.is_im) score += 40;
+    if (m.text?.includes(`<@${uid}>`)) score += 30;
+    ['urgent','asap','action required','deadline','critical'].forEach(w => { if (text.includes(w)) score += 20; });
+    if (m.bot_id) score -= 20;
+    score = Math.max(-100, Math.min(100, score));
+
+    const diffMin = Math.round((Date.now() / 1000 - parseFloat(m.ts)) / 60);
+    const time    = diffMin < 60 ? diffMin + ' min ago' : diffMin < 1440 ? Math.round(diffMin / 60) + ' hr ago' : Math.round(diffMin / 1440) + 'd ago';
+    const sender  = m.username || m.user || 'Unknown';
+    const chan    = ch.is_im ? 'Direct message' : '#' + ch.name;
+    const subj    = (m.text || '').replace(/<[^>]+>/g, '').substring(0, 100);
+    return { source: 'Slack', from: sender, channel: chan, subject: subj || '(no text)', score, time };
+  });
+}
+
+// ── Auth state (Gmail OAuth callback) ─────────────────────
+_sb.auth.onAuthStateChange(async (event, session) => {
+  if (!session?.user) return;
+  const provider  = session.user.app_metadata?.provider  || '';
+  const providers = session.user.app_metadata?.providers || [];
+  const isGoogle  = provider === 'google' || providers.includes('google');
+  if (isGoogle && session.provider_token) await loadGmailTriage(session.provider_token);
+});
+
+// ── Slack callback (token in URL hash after OAuth redirect) ─
+(function handleSlackCallback() {
+  const hash = window.location.hash;
+  if (hash.includes('slack_token=')) {
+    const token = new URLSearchParams(hash.slice(1)).get('slack_token');
+    if (token) {
+      localStorage.setItem('signal_slack_token', token);
+      history.replaceState(null, '', window.location.pathname);
+      loadSlackTriage(token);
+    }
+  } else if (hash.includes('slack_error=')) {
+    const err = new URLSearchParams(hash.slice(1)).get('slack_error');
+    history.replaceState(null, '', window.location.pathname);
+    showToast('Slack error: ' + err);
+  }
+  const stored = localStorage.getItem('signal_slack_token');
+  if (stored && !hash.includes('slack_token=')) loadSlackTriage(stored);
+})();
+
+// ── Modals ─────────────────────────────────────────────────
+function openModal()  { document.getElementById('modal').classList.add('open'); document.getElementById('modal-form').style.display='block'; document.getElementById('modal-ok').style.display='none'; }
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+
+async function submitModal() {
+  const email = document.getElementById('modal-email').value.trim();
+  const name  = document.getElementById('modal-name').value.trim();
+  if (!email || !email.includes('@')) { showToast('Please enter a valid email'); return; }
+  const btn = document.querySelector('.modal-btn');
+  btn.textContent = 'Joining…'; btn.disabled = true;
+  try {
+    const result = await addToWaitlist(email, name, 'modal');
+    document.getElementById('modal-form').style.display = 'none';
+    document.getElementById('modal-ok').style.display = 'block';
+    if (result === 'already') document.querySelector('#modal-ok p').textContent = "You're already on the list! We'll be in touch.";
+    setTimeout(closeModal, 2400);
+  } catch { showToast('Something went wrong — try again'); btn.textContent = 'Join the waitlist →'; btn.disabled = false; }
+}
+
+async function inlineSubmit() {
+  const email = document.getElementById('hero-email').value.trim();
+  if (!email || !email.includes('@')) { showToast('Please enter a valid email'); return; }
+  const btn = document.querySelector('.cta-section .btn-primary');
+  btn.textContent = 'Joining…'; btn.disabled = true;
+  try {
+    const result = await addToWaitlist(email, null, 'inline');
+    document.getElementById('email-ok').style.display = 'block';
+    document.getElementById('hero-email').value = '';
+    showToast(result === 'already' ? "You're already on the list!" : "🎉 You're on the list!");
+  } catch { showToast('Something went wrong — try again'); }
+  btn.textContent = 'Join waitlist'; btn.disabled = false;
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+// ── UI helpers ─────────────────────────────────────────────
+window.addEventListener('scroll', () => {
+  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 40);
+});
+
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+}, { threshold: 0.12 });
+document.querySelectorAll('.step-row').forEach(r => io.observe(r));
+
+function toggleStep(el) {
+  const wasOpen = el.classList.contains('expanded');
+  document.querySelectorAll('.step-row.expanded').forEach(s => s.classList.remove('expanded'));
+  if (!wasOpen) {
+    el.classList.add('expanded');
+    el.querySelectorAll('.score-bar-fill[data-w]').forEach((b, i) => {
+      setTimeout(() => { b.style.width = b.dataset.w + '%'; }, 80 + i * 60);
+    });
+  }
+}
+
+window.addEventListener('load', () => {
+  updateTriageStatus();
+  setTimeout(() => { const first = document.querySelector('.step-row'); if (first) toggleStep(first); }, 600);
+});
+</script>
+</body>
+</html>
