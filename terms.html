@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terms of Service — SignalTriage</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root { --red: #e60000; --charcoal: #25282b; --white: #ffffff; --grey: #7e7e7e; --light: #f2f2f2; --font: 'Inter', 'Helvetica Neue', Arial, sans-serif; }
+body { font-family: var(--font); background: var(--white); color: var(--charcoal); -webkit-font-smoothing: antialiased; }
+nav { position: fixed; top: 0; left: 0; right: 0; z-index: 200; display: flex; align-items: center; justify-content: space-between; padding: 0 64px; height: 64px; background: var(--white); box-shadow: 0 1px 0 rgba(0,0,0,0.08); }
+.nav-logo { font-size: 18px; font-weight: 800; letter-spacing: -0.5px; text-transform: uppercase; color: var(--charcoal); text-decoration: none; }
+.nav-logo span { color: var(--red); }
+.nav-links { display: flex; gap: 32px; list-style: none; }
+.nav-links a { font-size: 16px; font-weight: 400; color: var(--charcoal); text-decoration: none; transition: color 0.2s; }
+.nav-links a:hover { color: var(--red); }
+.page-hero { background: var(--charcoal); padding: 128px 96px 80px; }
+.page-eyebrow { font-size: 13px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--red); margin-bottom: 20px; }
+.page-h1 { font-size: clamp(40px, 6vw, 80px); font-weight: 800; line-height: 0.92; letter-spacing: -2px; text-transform: uppercase; color: var(--white); }
+.page-date { font-size: 13px; color: rgba(255,255,255,0.4); margin-top: 24px; }
+.content { max-width: 720px; margin: 0 auto; padding: 80px 96px; }
+.content h2 { font-size: 22px; font-weight: 800; color: var(--charcoal); margin: 48px 0 14px; padding-bottom: 10px; border-bottom: 2px solid var(--light); }
+.content h2:first-child { margin-top: 0; }
+.content p { font-size: 16px; line-height: 1.75; color: #444; margin-bottom: 16px; }
+.content ul { margin: 0 0 16px 20px; }
+.content ul li { font-size: 16px; line-height: 1.75; color: #444; margin-bottom: 8px; }
+.content a { color: var(--red); font-weight: 600; text-decoration: none; }
+.content a:hover { text-decoration: underline; }
+.highlight-box { background: var(--light); border-left: 3px solid var(--red); padding: 20px 24px; margin: 32px 0; border-radius: 0 4px 4px 0; }
+.highlight-box p { margin: 0; font-weight: 600; color: var(--charcoal); }
+footer { background: var(--charcoal); padding: 48px 96px; margin-top: 80px; }
+.footer-inner { max-width: 1440px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+.footer-logo { font-size: 18px; font-weight: 800; text-transform: uppercase; letter-spacing: -0.5px; color: var(--white); text-decoration: none; }
+.footer-logo span { color: var(--red); }
+.footer-links { display: flex; gap: 24px; }
+.footer-links a { font-size: 13px; color: rgba(255,255,255,0.4); text-decoration: none; transition: color 0.2s; }
+.footer-links a:hover { color: var(--white); }
+.footer-legal { font-size: 12px; color: rgba(255,255,255,0.25); }
+@media(max-width:768px) { nav { padding: 0 20px; } .page-hero { padding: 100px 20px 60px; } .content { padding: 48px 20px; } footer { padding: 40px 20px; } }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo"><img src="logo.svg" alt="SignalTriage" height="32" style="display:block;"></a>
+  <ul class="nav-links">
+    <li><a href="/#features">Why Signal</a></li>
+  </ul>
+</nav>
+
+<div class="page-hero">
+  <p class="page-eyebrow">Legal</p>
+  <h1 class="page-h1">Terms of<br>Service.</h1>
+  <p class="page-date">Last updated: 6 May 2025</p>
+</div>
+
+<div class="content">
+
+  <div class="highlight-box">
+    <p>By using Signal, you agree to these terms. Please read them. They're short.</p>
+  </div>
+
+  <h2>1. Acceptance of Terms</h2>
+  <p>By accessing or using Signal ("the Service"), you agree to be bound by these Terms of Service. If you do not agree, do not use the Service.</p>
+
+  <h2>2. Description of Service</h2>
+  <p>Signal is a notification triage tool that connects to your Gmail account via Google's OAuth API to help you identify and prioritise important messages. The Service processes email metadata in your browser and does not store your email content.</p>
+
+  <h2>3. Eligibility</h2>
+  <p>You must be at least 13 years old to use Signal. By using the Service, you represent that you meet this requirement.</p>
+
+  <h2>4. Your Account</h2>
+  <p>You are responsible for maintaining the security of your account credentials. You agree to notify us immediately of any unauthorised access at <a href="mailto:signaltriage@gmail.com">signaltriage@gmail.com</a>. We are not liable for any loss resulting from unauthorised use of your account.</p>
+
+  <h2>5. Acceptable Use</h2>
+  <p>You agree not to:</p>
+  <ul>
+    <li>Use the Service for any unlawful purpose</li>
+    <li>Attempt to circumvent, disable, or interfere with security features</li>
+    <li>Use automated means to access the Service without our written permission</li>
+    <li>Reverse engineer, decompile, or disassemble any part of the Service</li>
+    <li>Use the Service in a way that could damage, disable, or impair it</li>
+  </ul>
+
+  <h2>6. Gmail Access</h2>
+  <p>Signal accesses your Gmail account only with your explicit permission via Google's OAuth 2.0 flow. You may revoke this access at any time via <a href="https://myaccount.google.com/permissions">Google Account Permissions</a>. Signal's use of data obtained from Google APIs complies with the <a href="https://developers.google.com/terms/api-services-user-data-policy">Google API Services User Data Policy</a>, including the Limited Use requirements.</p>
+
+  <h2>7. Intellectual Property</h2>
+  <p>The Signal name, logo, and all content on this website are owned by Signal Labs and protected by applicable intellectual property laws. You may not reproduce, distribute, or create derivative works without our written consent.</p>
+
+  <h2>8. Disclaimer of Warranties</h2>
+  <p>Signal is provided "as is" and "as available" without warranties of any kind, express or implied. We do not warrant that the Service will be uninterrupted, error-free, or free of viruses. We make no guarantee that email triage scores are accurate or complete.</p>
+
+  <h2>9. Limitation of Liability</h2>
+  <p>To the fullest extent permitted by law, Signal Labs shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising from your use of the Service, including but not limited to loss of data, profits, or business opportunities.</p>
+
+  <h2>10. Termination</h2>
+  <p>We reserve the right to suspend or terminate your access to the Service at any time, for any reason, with or without notice. You may stop using the Service at any time.</p>
+
+  <h2>11. Changes to Terms</h2>
+  <p>We may update these terms at any time. The date of the most recent revision is shown at the top of this page. Continued use of the Service after changes constitutes acceptance of the updated terms.</p>
+
+  <h2>12. Governing Law</h2>
+  <p>These terms are governed by the laws of England and Wales. Any disputes shall be subject to the exclusive jurisdiction of the courts of England and Wales.</p>
+
+  <h2>13. Contact</h2>
+  <p>Questions about these terms? Email <a href="mailto:signaltriage@gmail.com">signaltriage@gmail.com</a>.</p>
+
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <a href="/" class="footer-logo">sig<span>&middot;</span>nal</a>
+    <div class="footer-links">
+      <a href="/about.html">About</a>
+      <a href="/privacy.html">Privacy</a>
+      <a href="/terms.html">Terms</a>
+    </div>
+    <p class="footer-legal">&copy; 2025 Signal. All rights reserved.</p>
+  </div>
+</footer>
+
+</body>
+</html>
