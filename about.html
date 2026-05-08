@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About — SignalTriage</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root { --red: #e60000; --charcoal: #25282b; --white: #ffffff; --grey: #7e7e7e; --light: #f2f2f2; --font: 'Inter', 'Helvetica Neue', Arial, sans-serif; }
+html { scroll-behavior: smooth; }
+body { font-family: var(--font); background: var(--white); color: var(--charcoal); -webkit-font-smoothing: antialiased; }
+nav { position: fixed; top: 0; left: 0; right: 0; z-index: 200; display: flex; align-items: center; justify-content: space-between; padding: 0 64px; height: 64px; background: var(--white); box-shadow: 0 1px 0 rgba(0,0,0,0.08); }
+.nav-logo { font-size: 18px; font-weight: 800; letter-spacing: -0.5px; text-transform: uppercase; color: var(--charcoal); text-decoration: none; }
+.nav-logo span { color: var(--red); }
+.nav-links { display: flex; gap: 32px; list-style: none; }
+.nav-links a { font-size: 16px; font-weight: 400; color: var(--charcoal); text-decoration: none; transition: color 0.2s; }
+.nav-links a:hover { color: var(--red); }
+.page-hero { background: var(--charcoal); padding: 128px 96px 80px; }
+.page-eyebrow { font-size: 13px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--red); margin-bottom: 20px; }
+.page-h1 { font-size: clamp(40px, 6vw, 80px); font-weight: 800; line-height: 0.92; letter-spacing: -2px; text-transform: uppercase; color: var(--white); }
+.content { max-width: 720px; margin: 0 auto; padding: 80px 96px; }
+.content h2 { font-size: 24px; font-weight: 800; color: var(--charcoal); margin: 48px 0 16px; }
+.content h2:first-child { margin-top: 0; }
+.content p { font-size: 17px; line-height: 1.7; color: #444; margin-bottom: 20px; }
+.content p:last-child { margin-bottom: 0; }
+.stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--light); margin: 48px 0; }
+.stat-box { background: var(--white); padding: 32px; border: 1px solid var(--light); }
+.stat-num { font-size: 48px; font-weight: 800; color: var(--charcoal); letter-spacing: -2px; line-height: 1; }
+.stat-num span { color: var(--red); }
+.stat-label { font-size: 14px; color: var(--grey); margin-top: 8px; }
+footer { background: var(--charcoal); padding: 48px 96px; margin-top: 80px; }
+.footer-inner { max-width: 1440px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+.footer-logo { font-size: 18px; font-weight: 800; text-transform: uppercase; letter-spacing: -0.5px; color: var(--white); text-decoration: none; }
+.footer-logo span { color: var(--red); }
+.footer-links { display: flex; gap: 24px; }
+.footer-links a { font-size: 13px; color: rgba(255,255,255,0.4); text-decoration: none; transition: color 0.2s; }
+.footer-links a:hover { color: var(--white); }
+.footer-legal { font-size: 12px; color: rgba(255,255,255,0.25); }
+@media(max-width:768px) { nav { padding: 0 20px; } .page-hero { padding: 100px 20px 60px; } .content { padding: 48px 20px; } .stat-row { grid-template-columns: 1fr; } footer { padding: 40px 20px; } }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo"><img src="logo.svg" alt="SignalTriage" height="32" style="display:block;"></a>
+  <ul class="nav-links">
+    <li><a href="/#features">Why Signal</a></li>
+  </ul>
+</nav>
+
+<div class="page-hero">
+  <p class="page-eyebrow">About Signal</p>
+  <h1>Built for<br>people, not<br>algorithms.</h1>
+</div>
+
+<div class="content">
+  <h2>Our Mission</h2>
+  <p>Signal exists because the average knowledge worker now receives over 120 emails and 50 messages a day. Most of it is noise. We built Signal to give you back the one thing no inbox setting can: clarity.</p>
+  <p>We don't move your email. We don't store your messages. We read your inbox in real time, score every message for actual urgency, and surface the 5 things that matter right now — so you can ignore everything else guilt-free.</p>
+
+  <h2>Why We Built This</h2>
+  <p>We got tired of email apps that promised smart sorting but just made more folders. The problem was never organisation — it was priority. What actually needs a response today? What can wait a week? What is just noise dressed up as a task?</p>
+  <p>Signal answers those questions automatically, using the signals already in your inbox: labels, senders, subjects, timing. No rules to write. No training required. It just works.</p>
+
+  <div class="stat-row">
+    <div class="stat-box">
+      <div class="stat-num">47<span>+</span></div>
+      <div class="stat-label">Average daily notifications per person</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num">2<span>h</span></div>
+      <div class="stat-label">Time lost daily to low-priority messages</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num">5<span>%</span></div>
+      <div class="stat-label">Of messages actually need a same-day reply</div>
+    </div>
+  </div>
+
+  <h2>Privacy First</h2>
+  <p>Your emails are read directly from Gmail's API in your browser. Nothing is stored on our servers. Your token lives in your session and is used only to fetch and score messages in real time. We have no access to your inbox when you close the tab.</p>
+  <p>We take this seriously. Read our <a href="/privacy.html" style="color:var(--red);font-weight:600;">Privacy Policy</a> for the full picture.</p>
+
+  <h2>Get in Touch</h2>
+  <p>We're a small team and we read every message. Reach us at <a href="mailto:signaltriage@gmail.com" style="color:var(--red);font-weight:600;">signaltriage@gmail.com</a></p>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <a href="/" class="footer-logo">sig<span>&middot;</span>nal</a>
+    <div class="footer-links">
+      <a href="/about.html">About</a>
+      <a href="/privacy.html">Privacy</a>
+      <a href="/terms.html">Terms</a>
+    </div>
+    <p class="footer-legal">&copy; 2025 Signal. All rights reserved.</p>
+  </div>
+</footer>
+
+</body>
+</html>
