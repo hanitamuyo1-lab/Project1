@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy — SignalTriage</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root { --red: #e60000; --charcoal: #25282b; --white: #ffffff; --grey: #7e7e7e; --light: #f2f2f2; --font: 'Inter', 'Helvetica Neue', Arial, sans-serif; }
+body { font-family: var(--font); background: var(--white); color: var(--charcoal); -webkit-font-smoothing: antialiased; }
+nav { position: fixed; top: 0; left: 0; right: 0; z-index: 200; display: flex; align-items: center; justify-content: space-between; padding: 0 64px; height: 64px; background: var(--white); box-shadow: 0 1px 0 rgba(0,0,0,0.08); }
+.nav-logo { font-size: 18px; font-weight: 800; letter-spacing: -0.5px; text-transform: uppercase; color: var(--charcoal); text-decoration: none; }
+.nav-logo span { color: var(--red); }
+.nav-links { display: flex; gap: 32px; list-style: none; }
+.nav-links a { font-size: 16px; font-weight: 400; color: var(--charcoal); text-decoration: none; transition: color 0.2s; }
+.nav-links a:hover { color: var(--red); }
+.page-hero { background: var(--charcoal); padding: 128px 96px 80px; }
+.page-eyebrow { font-size: 13px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--red); margin-bottom: 20px; }
+.page-h1 { font-size: clamp(40px, 6vw, 80px); font-weight: 800; line-height: 0.92; letter-spacing: -2px; text-transform: uppercase; color: var(--white); }
+.page-date { font-size: 13px; color: rgba(255,255,255,0.4); margin-top: 24px; }
+.content { max-width: 720px; margin: 0 auto; padding: 80px 96px; }
+.content h2 { font-size: 22px; font-weight: 800; color: var(--charcoal); margin: 48px 0 14px; padding-bottom: 10px; border-bottom: 2px solid var(--light); }
+.content h2:first-child { margin-top: 0; }
+.content p { font-size: 16px; line-height: 1.75; color: #444; margin-bottom: 16px; }
+.content ul { margin: 0 0 16px 20px; }
+.content ul li { font-size: 16px; line-height: 1.75; color: #444; margin-bottom: 8px; }
+.content a { color: var(--red); font-weight: 600; text-decoration: none; }
+.content a:hover { text-decoration: underline; }
+.highlight-box { background: var(--light); border-left: 3px solid var(--red); padding: 20px 24px; margin: 32px 0; border-radius: 0 4px 4px 0; }
+.highlight-box p { margin: 0; font-weight: 600; color: var(--charcoal); }
+footer { background: var(--charcoal); padding: 48px 96px; margin-top: 80px; }
+.footer-inner { max-width: 1440px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+.footer-logo { font-size: 18px; font-weight: 800; text-transform: uppercase; letter-spacing: -0.5px; color: var(--white); text-decoration: none; }
+.footer-logo span { color: var(--red); }
+.footer-links { display: flex; gap: 24px; }
+.footer-links a { font-size: 13px; color: rgba(255,255,255,0.4); text-decoration: none; transition: color 0.2s; }
+.footer-links a:hover { color: var(--white); }
+.footer-legal { font-size: 12px; color: rgba(255,255,255,0.25); }
+@media(max-width:768px) { nav { padding: 0 20px; } .page-hero { padding: 100px 20px 60px; } .content { padding: 48px 20px; } footer { padding: 40px 20px; } }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo"><img src="logo.svg" alt="SignalTriage" height="32" style="display:block;"></a>
+  <ul class="nav-links">
+    <li><a href="/#features">Why Signal</a></li>
+  </ul>
+</nav>
+
+<div class="page-hero">
+  <p class="page-eyebrow">Legal</p>
+  <h1 class="page-h1">Privacy<br>Policy.</h1>
+  <p class="page-date">Last updated: 6 May 2025</p>
+</div>
+
+<div class="content">
+
+  <div class="highlight-box">
+    <p>Short version: Signal reads your Gmail in your browser to triage messages. We do not store your emails. We do not sell your data. Ever.</p>
+  </div>
+
+  <h2>1. Who We Are</h2>
+  <p>Signal ("we", "us", "our") is a notification triage tool operated by Signal Labs. Our website is <a href="https://www.signal-triage.net">signal-triage.net</a>. You can contact us at <a href="mailto:signaltriage@gmail.com">signaltriage@gmail.com</a>.</p>
+
+  <h2>2. What Data We Collect</h2>
+  <p>When you connect Gmail, Signal requests read-only access to your Gmail inbox via Google's OAuth 2.0 service. This gives us a temporary access token stored in your browser session. We use that token to:</p>
+  <ul>
+    <li>Fetch your most recent inbox messages directly from the Gmail API</li>
+    <li>Read message metadata (sender, subject, date, labels)</li>
+    <li>Score and rank messages by priority in your browser</li>
+  </ul>
+  <p>We do not read message body content. We do not transmit your emails to our servers. All processing happens in your browser.</p>
+  <p>If you create an account, we store your email address and, optionally, a display name in our database (hosted on Supabase in the EU).</p>
+
+  <h2>3. What We Do Not Collect</h2>
+  <ul>
+    <li>Email body content</li>
+    <li>Attachments</li>
+    <li>Contact lists</li>
+    <li>Historical email data beyond your current session</li>
+    <li>Device identifiers or tracking pixels</li>
+  </ul>
+
+  <h2>4. How We Use Your Data</h2>
+  <p>The Gmail access token is used solely to display your triaged inbox to you. It is never sent to our servers, logged, or shared with any third party.</p>
+  <p>Your account email is used only for authentication. We do not send marketing emails without your explicit consent.</p>
+
+  <h2>5. Data Sharing</h2>
+  <p>We do not sell, trade, or rent your personal data to third parties. We use the following sub-processors to operate the service:</p>
+  <ul>
+    <li><strong>Supabase</strong> — authentication and account storage (EU region)</li>
+    <li><strong>Vercel</strong> — website hosting and delivery</li>
+    <li><strong>Google</strong> — Gmail API access (you authorise this directly via Google)</li>
+  </ul>
+
+  <h2>6. Your Rights</h2>
+  <p>Under GDPR and applicable data protection law, you have the right to:</p>
+  <ul>
+    <li>Access the personal data we hold about you</li>
+    <li>Request correction of inaccurate data</li>
+    <li>Request deletion of your account and data</li>
+    <li>Withdraw your Gmail authorisation at any time via <a href="https://myaccount.google.com/permissions">Google Account Permissions</a></li>
+  </ul>
+  <p>To exercise any of these rights, email us at <a href="mailto:signaltriage@gmail.com">signaltriage@gmail.com</a>.</p>
+
+  <h2>7. Data Retention</h2>
+  <p>Your account data is retained until you request deletion. Gmail session tokens expire when you close your browser or sign out. We do not retain any copy of your inbox data.</p>
+
+  <h2>8. Cookies</h2>
+  <p>We use session cookies only for authentication (managed by Supabase). We do not use advertising cookies, analytics cookies, or any third-party tracking.</p>
+
+  <h2>9. Children's Privacy</h2>
+  <p>Signal is not directed at children under 13. We do not knowingly collect data from children. If you believe we have collected data from a child, contact us immediately.</p>
+
+  <h2>10. Changes to This Policy</h2>
+  <p>We may update this policy from time to time. We will note the date of the most recent revision at the top of this page. Continued use of Signal after changes constitutes acceptance of the updated policy.</p>
+
+  <h2>11. Contact</h2>
+  <p>Questions about privacy? Email <a href="mailto:signaltriage@gmail.com">signaltriage@gmail.com</a>.</p>
+
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <a href="/" class="footer-logo">sig<span>&middot;</span>nal</a>
+    <div class="footer-links">
+      <a href="/about.html">About</a>
+      <a href="/privacy.html">Privacy</a>
+      <a href="/terms.html">Terms</a>
+    </div>
+    <p class="footer-legal">&copy; 2025 Signal. All rights reserved.</p>
+  </div>
+</footer>
+
+</body>
+</html>
