@@ -71,8 +71,17 @@ nav.solid .nav-links a:hover { color: var(--red); }
 .imap-input { padding: 12px 16px; border: 1px solid #ddd; border-radius: 2px; font-family: var(--font); font-size: 14px; color: var(--charcoal); outline: none; transition: border-color 0.15s; min-width: 200px; }
 .imap-input:focus { border-color: var(--red); }
 .imap-hint-small { font-size: 13px; color: var(--grey); margin-top: 10px; }
-.imap-hint-small a { color: var(--red); }
+.imap-hint-small a, .imap-help-toggle { color: var(--red); background: none; border: none; padding: 0; font: inherit; cursor: pointer; text-decoration: underline; }
 .imap-connect-error { font-size: 13px; color: #d40000; margin-top: 10px; min-height: 16px; }
+.imap-password-wrap { position: relative; display: inline-flex; }
+.imap-password-wrap .imap-input { padding-right: 44px; }
+.imap-toggle-visibility { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 13px; color: var(--grey); padding: 4px; }
+.imap-toggle-visibility:hover { color: var(--charcoal); }
+.imap-help-box { display: none; background: var(--light); border-radius: 6px; padding: 20px 24px; margin-top: 14px; max-width: 560px; }
+.imap-help-box.open { display: block; }
+.imap-help-box ol { margin: 8px 0 0 20px; font-size: 14px; color: var(--charcoal); line-height: 1.7; }
+.imap-help-box a { color: var(--red); }
+.imap-help-box strong { display: block; font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--grey); }
 
 /* ── Red band ──────────────────────────────────────────────── */
 .red-band { background: var(--red); height: 64px; }
@@ -283,13 +292,27 @@ footer { background: var(--charcoal); padding: 80px 96px 48px; }
 
     <div class="triage-connect-bar">
       <form class="imap-connect-form" id="imap-connect-form" onsubmit="connectImap(event)">
-        <input class="imap-input" type="email" id="imap-email" placeholder="you@gmail.com" required>
-        <input class="imap-input" type="password" id="imap-password" placeholder="App password" required autocomplete="off">
+        <input class="imap-input" type="email" id="imap-email" placeholder="you@gmail.com" required oninput="updateAppPasswordLink()">
+        <span class="imap-password-wrap">
+          <input class="imap-input" type="password" id="imap-password" placeholder="App password" required autocomplete="new-password" spellcheck="false" autocapitalize="off">
+          <button type="button" class="imap-toggle-visibility" id="imap-toggle-visibility" onclick="toggleImapPasswordVisibility()" aria-label="Show password">&#128065;</button>
+        </span>
         <button class="btn-ghost-rect" id="btn-connect" type="submit">Connect Mailbox</button>
       </form>
       <button class="btn-ghost-rect" id="btn-unlink" onclick="unlinkImap(event)" style="display:none;border-color:#e60000;color:#e60000;">&#x2715; Disconnect</button>
     </div>
-    <p class="imap-hint-small">Works with Gmail, Outlook &amp; Yahoo. Use an <a href="https://support.google.com/accounts/answer/185833" target="_blank" rel="noopener">app password</a>, not your real password — it's sent once to fetch your inbox and is never stored.</p>
+    <p class="imap-hint-small">Works with Gmail, Outlook &amp; Yahoo. Use an app password, not your real password — it's sent once to fetch your inbox and is never stored. <button type="button" class="imap-help-toggle" onclick="toggleImapHelp()">How do I get an app password?</button></p>
+    <div class="imap-help-box" id="imap-help-box">
+      <strong>Gmail</strong>
+      <ol>
+        <li>Go to <a href="https://myaccount.google.com/security" target="_blank" rel="noopener">Google Account &rarr; Security</a> and turn on <strong style="display:inline;text-transform:none;letter-spacing:normal;">2-Step Verification</strong> if it's off.</li>
+        <li>Open <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noopener" id="imap-help-link">myaccount.google.com/apppasswords</a>.</li>
+        <li>Name it anything (e.g. "Signal") and click Create.</li>
+        <li>Copy the 16-character code Google shows you using the copy button — don't retype it by hand.</li>
+        <li>Paste it into the App password field above. If your browser autofills something else in that field, clear it and paste again.</li>
+      </ol>
+      <p class="imap-hint-small" style="margin-top:12px;">Outlook: <a href="https://support.microsoft.com/en-us/account-billing/using-app-passwords-with-apps-that-don-t-support-two-step-verification-5896ed9b-4263-e681-128a-a6f2979a7944" target="_blank" rel="noopener">Microsoft app passwords guide</a>. Yahoo: <a href="https://help.yahoo.com/kb/generate-manage-third-party-passwords-sln15241.html" target="_blank" rel="noopener">Yahoo app passwords guide</a>.</p>
+    </div>
     <p class="imap-connect-error" id="imap-connect-error"></p>
 
     <div class="triage-source-pills" id="triage-pills"></div>
@@ -463,12 +486,47 @@ const API_BASE = window.location.hostname === 'localhost' || window.location.hos
   ? 'http://localhost:4000'
   : 'https://signal-triage-backend-production.up.railway.app';
 
+// ── App-password help UI ────────────────────────────────────
+function toggleImapPasswordVisibility() {
+  const passEl = document.getElementById('imap-password');
+  const btn = document.getElementById('imap-toggle-visibility');
+  const showing = passEl.type === 'text';
+  passEl.type = showing ? 'password' : 'text';
+  btn.textContent = showing ? '\u{1F441}' : '\u{1F576}';
+  btn.setAttribute('aria-label', showing ? 'Show password' : 'Hide password');
+}
+
+function toggleImapHelp() {
+  document.getElementById('imap-help-box').classList.toggle('open');
+}
+
+const APP_PASSWORD_LINKS = {
+  'gmail.com': 'https://myaccount.google.com/apppasswords',
+  'outlook.com': 'https://account.live.com/proofs/AppPassword',
+  'hotmail.com': 'https://account.live.com/proofs/AppPassword',
+  'live.com': 'https://account.live.com/proofs/AppPassword',
+  'yahoo.com': 'https://login.yahoo.com/myaccount/security/app-passwords',
+};
+
+function updateAppPasswordLink() {
+  const email = document.getElementById('imap-email').value.trim().toLowerCase();
+  const domain = email.split('@')[1];
+  const link = document.getElementById('imap-help-link');
+  if (domain && APP_PASSWORD_LINKS[domain]) {
+    link.href = APP_PASSWORD_LINKS[domain];
+    link.textContent = APP_PASSWORD_LINKS[domain].replace(/^https?:\/\//, '');
+  }
+}
+
 // ── Mailbox connect / disconnect (IMAP) ────────────────────
 async function unlinkImap(e) {
   e.stopPropagation();
   _allMessages = _allMessages.filter(m => m.source !== 'Email');
   document.getElementById('imap-connect-form').style.display = 'flex';
-  document.getElementById('imap-password').value = '';
+  const passEl = document.getElementById('imap-password');
+  passEl.value = '';
+  passEl.type = 'password';
+  document.getElementById('imap-help-box').classList.remove('open');
   renderTriage();
   updateTriageStatus();
   showToast('Mailbox disconnected');
@@ -497,7 +555,7 @@ async function connectImap(e) {
       body: JSON.stringify({ email, password })
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Could not connect.');
+    if (!res.ok) { const e = new Error(data.error || 'Could not connect.'); e.code = data.code; throw e; }
 
     const msgs = data.emails.map(toTriageMsg);
     _allMessages = [...msgs, ..._allMessages.filter(m => m.source !== 'Email')];
@@ -508,6 +566,10 @@ async function connectImap(e) {
   } catch (err) {
     errEl.textContent = err.message;
     showToast('Connect failed: ' + err.message);
+    if (err.code === 'INVALID_CREDENTIALS') {
+      errEl.textContent += ' Make sure it’s an app password (not your regular password) and that autofill didn’t swap it.';
+      document.getElementById('imap-help-box').classList.add('open');
+    }
   } finally {
     btn.textContent = 'Connect Mailbox';
     btn.disabled = false;
