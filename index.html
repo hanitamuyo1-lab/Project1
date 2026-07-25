@@ -682,9 +682,14 @@ async function doSubscribe() {
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err.textContent = 'Please enter a valid email.'; return; }
   btn.textContent = 'Subscribing…'; btn.disabled = true; err.textContent = '';
   try {
-    const { error } = await _sb.from('subscribers').insert({ email });
-    if (error) {
-      err.textContent = error.code === '23505' ? 'Already subscribed!' : 'Something went wrong. Try again.';
+    const res = await fetch('https://aovgxslluxrenozowpoo.supabase.co/functions/v1/subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      err.textContent = data.code === '23505' ? 'Already subscribed!' : 'Something went wrong. Try again.';
       return;
     }
     document.getElementById('subscribe-form').style.display = 'none';
