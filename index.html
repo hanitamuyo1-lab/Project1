@@ -64,6 +64,15 @@ nav.solid .nav-links a:hover { color: var(--red); }
 .btn-ghost-rect { background: var(--white); color: var(--charcoal); border: 1px solid var(--charcoal); border-radius: 2px; padding: 12px 20px; font-family: var(--font); font-size: 14.4px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: border-color 0.15s; }
 .btn-ghost-rect:hover { border-color: var(--red); color: var(--red); }
 .btn-ghost-rect.connected { border-color: #00a870; color: #00a870; background: #f0fff8; }
+.btn-ghost-rect:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* ── IMAP connect form ────────────────────────────────────── */
+.imap-connect-form { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.imap-input { padding: 12px 16px; border: 1px solid #ddd; border-radius: 2px; font-family: var(--font); font-size: 14px; color: var(--charcoal); outline: none; transition: border-color 0.15s; min-width: 200px; }
+.imap-input:focus { border-color: var(--red); }
+.imap-hint-small { font-size: 13px; color: var(--grey); margin-top: 10px; }
+.imap-hint-small a { color: var(--red); }
+.imap-connect-error { font-size: 13px; color: #d40000; margin-top: 10px; min-height: 16px; }
 
 /* ── Red band ──────────────────────────────────────────────── */
 .red-band { background: var(--red); height: 64px; }
@@ -273,17 +282,21 @@ footer { background: var(--charcoal); padding: 80px 96px 48px; }
     <h2 class="section-h2">Your inbox,<br><strong>ranked by what matters.</strong></h2>
 
     <div class="triage-connect-bar">
-      <button class="btn-ghost-rect" id="btn-gmail" onclick="connectGmail(event)">
-        <img src="https://www.google.com/favicon.ico" width="16" height="16" alt=""> Connect Gmail
-      </button>
-      <button class="btn-ghost-rect" id="btn-unlink" onclick="unlinkGmail(event)" style="display:none;border-color:#e60000;color:#e60000;">&#x2715; Disconnect Gmail</button>
+      <form class="imap-connect-form" id="imap-connect-form" onsubmit="connectImap(event)">
+        <input class="imap-input" type="email" id="imap-email" placeholder="you@gmail.com" required>
+        <input class="imap-input" type="password" id="imap-password" placeholder="App password" required autocomplete="off">
+        <button class="btn-ghost-rect" id="btn-connect" type="submit">Connect Mailbox</button>
+      </form>
+      <button class="btn-ghost-rect" id="btn-unlink" onclick="unlinkImap(event)" style="display:none;border-color:#e60000;color:#e60000;">&#x2715; Disconnect</button>
     </div>
+    <p class="imap-hint-small">Works with Gmail, Outlook &amp; Yahoo. Use an <a href="https://support.google.com/accounts/answer/185833" target="_blank" rel="noopener">app password</a>, not your real password — it's sent once to fetch your inbox and is never stored.</p>
+    <p class="imap-connect-error" id="imap-connect-error"></p>
 
     <div class="triage-source-pills" id="triage-pills"></div>
 
     <div id="triage-empty">
       <div class="triage-connect-box">
-        <p class="triage-connect-hint">Connect Gmail above to see your real inbox scored and ranked in real time — urgent at the top, noise filtered to the bottom.</p>
+        <p class="triage-connect-hint">Connect a mailbox above to see your real inbox scored and ranked in real time — urgent at the top, noise filtered to the bottom.</p>
       </div>
     </div>
 
@@ -409,8 +422,8 @@ footer { background: var(--charcoal); padding: 80px 96px 48px; }
       <div>
         <div class="footer-col-head">Connect</div>
         <div class="footer-col">
-          <a href="#" onclick="connectGmail(event); return false;" id="footer-gmail-link">Gmail</a>
-          <a href="#" onclick="unlinkGmail(event); return false;" id="footer-unlink-link" style="display:none;color:#e60000;">Disconnect Gmail</a>
+          <a href="#triage-section" id="footer-gmail-link">Connect mailbox</a>
+          <a href="#" onclick="unlinkImap(event); return false;" id="footer-unlink-link" style="display:none;color:#e60000;">Disconnect mailbox</a>
         </div>
       </div>
       <div>
@@ -444,89 +457,86 @@ function showToast(msg) {
   _tt = setTimeout(() => t.classList.remove('show'), 2600);
 }
 
-// ── Gmail unlink ───────────────────────────────────────────
-async function unlinkGmail(e) {
+// ── Backend API base ───────────────────────────────────────
+// Points at the Express server in /server. Change for production deploys.
+const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? 'http://localhost:4000'
+  : 'https://YOUR-DEPLOYED-BACKEND.example.com';
+
+// ── Mailbox connect / disconnect (IMAP) ────────────────────
+async function unlinkImap(e) {
   e.stopPropagation();
-  _allMessages = _allMessages.filter(m => m.source !== 'Gmail');
+  _allMessages = _allMessages.filter(m => m.source !== 'Email');
+  document.getElementById('imap-connect-form').style.display = 'flex';
+  document.getElementById('imap-password').value = '';
   renderTriage();
   updateTriageStatus();
-  showToast('Gmail disconnected');
+  showToast('Mailbox disconnected');
 }
 
-// ── Gmail OAuth ────────────────────────────────────────────
-async function connectGmail(e) {
+async function connectImap(e) {
+  e.preventDefault();
   e.stopPropagation();
-  const btn = document.getElementById('btn-gmail');
-  if (btn) { btn.textContent = 'Connecting…'; btn.disabled = true; }
-  const { error } = await _sb.auth.signInWithOAuth({
-    provider: 'google',
-    options: {
-      scopes: 'openid email profile https://www.googleapis.com/auth/gmail.readonly',
-      redirectTo: window.location.origin + '/',
-      queryParams: { access_type: 'offline', prompt: 'consent' }
-    }
-  });
-  if (error) {
-    if (btn) { btn.innerHTML = '<img src="https://www.google.com/favicon.ico" width="16" height="16"> Connect Gmail'; btn.disabled = false; }
-    showToast('Error: ' + error.message);
+  const emailEl = document.getElementById('imap-email');
+  const passEl  = document.getElementById('imap-password');
+  const errEl   = document.getElementById('imap-connect-error');
+  const btn     = document.getElementById('btn-connect');
+  errEl.textContent = '';
+
+  const email = emailEl.value.trim();
+  const password = passEl.value;
+
+  btn.textContent = 'Connecting…';
+  btn.disabled = true;
+  setTriageLoading(true);
+
+  try {
+    const res = await fetch(API_BASE + '/connect-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Could not connect.');
+
+    const msgs = data.emails.map(toTriageMsg);
+    _allMessages = [...msgs, ..._allMessages.filter(m => m.source !== 'Email')];
+    passEl.value = '';
+    renderTriage();
+    updateTriageStatus();
+    showToast('Mailbox loaded — ' + msgs.length + ' messages triaged');
+  } catch (err) {
+    errEl.textContent = err.message;
+    showToast('Connect failed: ' + err.message);
+  } finally {
+    btn.textContent = 'Connect Mailbox';
+    btn.disabled = false;
+    setTriageLoading(false);
   }
 }
 
-// ── Gmail fetch & score ────────────────────────────────────
-async function fetchGmail(token) {
-  const listRes = await fetch(
-    'https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=40&labelIds=INBOX',
-    { headers: { Authorization: 'Bearer ' + token } }
-  );
-  if (!listRes.ok) throw new Error('Gmail API ' + listRes.status);
-  const { messages = [] } = await listRes.json();
-  const details = await Promise.all(
-    messages.slice(0, 30).map(m =>
-      fetch(
-        `https://gmail.googleapis.com/gmail/v1/users/me/messages/${m.id}?format=metadata` +
-        `&metadataHeaders=From&metadataHeaders=Subject&metadataHeaders=Date`,
-        { headers: { Authorization: 'Bearer ' + token } }
-      ).then(r => r.json())
-    )
-  );
-  return details;
-}
-
-function scoreGmail(msg) {
-  const labels  = msg.labelIds || [];
-  const hdrs    = Object.fromEntries((msg.payload?.headers || []).map(h => [h.name, h.value]));
-  const subject = (hdrs.Subject || '').toLowerCase();
-  const from    = (hdrs.From    || '').toLowerCase();
-  let score = 0;
-  if (labels.includes('IMPORTANT'))           score += 40;
-  if (labels.includes('STARRED'))             score += 30;
-  if (labels.includes('CATEGORY_PROMOTIONS')) score -= 40;
-  if (labels.includes('CATEGORY_SOCIAL'))     score -= 20;
-  if (labels.includes('CATEGORY_FORUMS'))     score -= 25;
-  if (labels.includes('CATEGORY_UPDATES'))    score -= 10;
-  ['urgent','asap','action required','deadline','critical'].forEach(w => { if (subject.includes(w)) score += 20; });
-  ['newsletter','unsubscribe','digest','promo','sale','offer','weekly','monthly'].forEach(w => { if (subject.includes(w)) score -= 20; });
-  if (/noreply|no-reply|donotreply/.test(from)) score -= 35;
-  if ((hdrs.Subject || '').startsWith('Re:'))   score += 10;
-  return Math.max(-100, Math.min(100, score));
-}
-
-function toTriageMsg(gmailMsg) {
-  const hdrs    = Object.fromEntries((gmailMsg.payload?.headers || []).map(h => [h.name, h.value]));
-  const score   = scoreGmail(gmailMsg);
+function toTriageMsg(apiMsg) {
   let time = '';
   try {
-    const d = new Date(hdrs.Date || '');
+    const d = new Date(apiMsg.date || '');
     const diffMin = Math.round((Date.now() - d) / 60000);
     time = diffMin < 60 ? diffMin + ' min ago' : diffMin < 1440 ? Math.round(diffMin/60) + ' hr ago' : Math.round(diffMin/1440) + 'd ago';
   } catch {}
-  return { source:'Gmail', from: hdrs.From || 'Unknown', subject: hdrs.Subject || '(no subject)', score, time };
+  return {
+    source: 'Email',
+    from: apiMsg.from || 'Unknown',
+    subject: apiMsg.subject || '(no subject)',
+    score: apiMsg.priority ?? 0,
+    category: apiMsg.category || '',
+    summary: apiMsg.summary || '',
+    time
+  };
 }
 
 // ── Triage state ───────────────────────────────────────────
 let _allMessages = [];
 
-function classify(score) { return score >= 40 ? 'urgent' : score >= 10 ? 'important' : 'noise'; }
+function classify(score) { return score >= 8 ? 'urgent' : score >= 5 ? 'important' : 'noise'; }
 
 function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
@@ -539,20 +549,20 @@ function setTriageLoading(on) {
 }
 
 function updateTriageStatus() {
-  const gmailOn = _allMessages.some(m => m.source === 'Gmail');
-  const hasData = gmailOn;
+  const mailOn  = _allMessages.some(m => m.source === 'Email');
+  const hasData = mailOn;
   document.getElementById('triage-empty').style.display = hasData ? 'none'  : 'block';
   document.getElementById('triage-view').style.display  = hasData ? 'block' : 'none';
-  const gBtn    = document.getElementById('btn-gmail');
+  const formEl  = document.getElementById('imap-connect-form');
   const uBtn    = document.getElementById('btn-unlink');
   const fLink   = document.getElementById('footer-gmail-link');
   const fuLink  = document.getElementById('footer-unlink-link');
-  if (gBtn) { if (gmailOn) { gBtn.innerHTML = '&#10003; Gmail connected'; gBtn.classList.add('connected'); gBtn.onclick = e => { e.stopPropagation(); showToast('Gmail already connected ✓'); }; } else { gBtn.innerHTML = '<img src="https://www.google.com/favicon.ico" width="16" height="16" alt=""> Connect Gmail'; gBtn.classList.remove('connected'); gBtn.onclick = connectGmail; } }
-  if (uBtn)   uBtn.style.display   = gmailOn ? 'inline-flex' : 'none';
-  if (fLink)  fLink.style.display  = gmailOn ? 'none'        : 'block';
-  if (fuLink) fuLink.style.display = gmailOn ? 'block'       : 'none';
+  if (formEl) formEl.style.display = mailOn ? 'none' : 'flex';
+  if (uBtn)   uBtn.style.display   = mailOn ? 'inline-flex' : 'none';
+  if (fLink)  fLink.style.display  = mailOn ? 'none'        : 'block';
+  if (fuLink) fuLink.style.display = mailOn ? 'block'       : 'none';
   const pills = document.getElementById('triage-pills');
-  pills.innerHTML = `<div class="triage-source-pill ${gmailOn?'on':'off'}"><div class="triage-source-dot"></div>Gmail</div>`;
+  pills.innerHTML = `<div class="triage-source-pill ${mailOn?'on':'off'}"><div class="triage-source-dot"></div>Mailbox</div>`;
 }
 
 function renderTriage() {
@@ -575,11 +585,14 @@ function renderTriage() {
       : cls === 'important'
         ? '<span class="triage-badge important">Important</span>'
         : '<span class="triage-badge noise">Noise</span>';
+    const meta  = [m.source, m.from.replace(/<.*>/,'').trim(), m.time].filter(Boolean).map(escHtml).join(' &middot; ');
+    const summaryLine = m.summary ? `<div class="triage-card-meta">${escHtml(m.summary)}</div>` : '';
     return `<div class="triage-card is-${cls}" onclick="showToast('${escHtml(m.subject).substring(0,40)}…')">
       <div class="triage-icon ${icls}">${icon}</div>
       <div class="triage-body">
         <div class="triage-card-title">${escHtml(m.subject)}</div>
-        <div class="triage-card-meta">${escHtml(m.source)} &middot; ${escHtml(m.from.replace(/<.*>/,'').trim())} &middot; ${m.time}</div>
+        <div class="triage-card-meta">${meta}</div>
+        ${summaryLine}
       </div>${badge}</div>`;
   }
 
@@ -596,31 +609,6 @@ function renderTriage() {
     <div class="triage-feed" id="noise-feed">${noise.map(cardHTML).join('')}</div>`;
   } else { nseEl.innerHTML = ''; }
 }
-
-async function loadGmailTriage(token) {
-  setTriageLoading(true);
-  try {
-    const raw  = await fetchGmail(token);
-    const msgs = raw.filter(m => !m.error).map(toTriageMsg);
-    _allMessages = [...msgs, ..._allMessages.filter(m => m.source !== 'Gmail')];
-    renderTriage();
-    updateTriageStatus();
-    showToast('Gmail loaded — ' + msgs.length + ' messages triaged');
-  } catch (err) {
-    showToast('Gmail fetch failed: ' + err.message);
-    updateTriageStatus();
-  } finally { setTriageLoading(false); }
-}
-
-// ── Auth state (Gmail OAuth callback) ─────────────────────
-_sb.auth.onAuthStateChange(async (event, session) => {
-  if (!session?.user) return;
-  const provider  = session.user.app_metadata?.provider  || '';
-  const providers = session.user.app_metadata?.providers || [];
-  if ((provider === 'google' || providers.includes('google')) && session.provider_token) {
-    await loadGmailTriage(session.provider_token);
-  }
-});
 
 // ── Subscribe ──────────────────────────────────────────────
 async function doSubscribe() {
