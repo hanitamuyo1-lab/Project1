@@ -295,7 +295,7 @@ footer { background: var(--charcoal); padding: 80px 96px 48px; }
         <input class="imap-input" type="email" id="imap-email" placeholder="you@gmail.com" required oninput="updateAppPasswordLink()">
         <span class="imap-password-wrap">
           <input class="imap-input" type="password" id="imap-password" placeholder="App password" required autocomplete="new-password" spellcheck="false" autocapitalize="off">
-          <button type="button" class="imap-toggle-visibility" id="imap-toggle-visibility" onclick="toggleImapPasswordVisibility()" aria-label="Show password">&#128065;</button>
+          <button type="button" class="imap-toggle-visibility" id="imap-toggle-visibility" onclick="toggleImapPasswordVisibility()" aria-label="Show password">Show</button>
         </span>
         <button class="btn-ghost-rect" id="btn-connect" type="submit">Connect Mailbox</button>
       </form>
@@ -492,7 +492,7 @@ function toggleImapPasswordVisibility() {
   const btn = document.getElementById('imap-toggle-visibility');
   const showing = passEl.type === 'text';
   passEl.type = showing ? 'password' : 'text';
-  btn.textContent = showing ? '\u{1F441}' : '\u{1F576}';
+  btn.textContent = showing ? 'Show' : 'Hide';
   btn.setAttribute('aria-label', showing ? 'Show password' : 'Hide password');
 }
 
