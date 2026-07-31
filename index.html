@@ -137,6 +137,8 @@ nav.solid .nav-links a:hover { color: var(--red); }
 .triage-badge.urgent    { background: var(--red);  color: var(--white); }
 .triage-badge.important { background: #ff8c00;     color: var(--white); }
 .triage-badge.noise { background: #eee; color: var(--grey); }
+.triage-delete-btn { flex-shrink: 0; align-self: center; margin-left: 12px; width: 24px; height: 24px; border-radius: 50%; border: 1px solid #ddd; background: var(--white); color: var(--grey); font-size: 11px; line-height: 1; cursor: pointer; }
+.triage-delete-btn:hover { border-color: var(--red); color: var(--red); }
 .noise-toggle { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; background: none; border: 1px solid #ddd; border-radius: 2px; padding: 3px 10px; cursor: pointer; color: var(--grey); margin-left: auto; }
 .noise-toggle:hover { border-color: var(--charcoal); color: var(--charcoal); }
 #triage-view { max-height: 78vh; overflow-y: auto; padding-right: 4px; scroll-behavior: smooth; }
@@ -586,6 +588,7 @@ function toTriageMsg(apiMsg) {
     time = diffMin < 60 ? diffMin + ' min ago' : diffMin < 1440 ? Math.round(diffMin/60) + ' hr ago' : Math.round(diffMin/1440) + 'd ago';
   } catch {}
   return {
+    key: 'Email:' + (apiMsg.id ?? Math.random().toString(36).slice(2)),
     source: 'Email',
     from: apiMsg.from || 'Unknown',
     subject: apiMsg.subject || '(no subject)',
@@ -628,6 +631,19 @@ function updateTriageStatus() {
   pills.innerHTML = `<div class="triage-source-pill ${mailOn?'on':'off'}"><div class="triage-source-dot"></div>Mailbox</div>`;
 }
 
+function deleteTriageMessage(key) {
+  _allMessages = _allMessages.filter(m => m.key !== key);
+  renderTriage();
+  updateTriageStatus();
+}
+
+function clearAllNoise() {
+  _allMessages = _allMessages.filter(m => classify(m.score) !== 'noise');
+  renderTriage();
+  updateTriageStatus();
+  showToast('Noise cleared');
+}
+
 function renderTriage() {
   const urgEl = document.getElementById('triage-urgent');
   const impEl = document.getElementById('triage-important');
@@ -650,13 +666,16 @@ function renderTriage() {
         : '<span class="triage-badge noise">Noise</span>';
     const meta  = [m.source, m.from.replace(/<.*>/,'').trim(), m.time].filter(Boolean).map(escHtml).join(' &middot; ');
     const summaryLine = m.summary ? `<div class="triage-card-meta">${escHtml(m.summary)}</div>` : '';
+    const deleteBtn = cls === 'noise'
+      ? `<button class="triage-delete-btn" title="Remove from list" onclick="event.stopPropagation();deleteTriageMessage('${m.key}')">&#x2715;</button>`
+      : '';
     return `<div class="triage-card is-${cls}" onclick="showToast('${escHtml(m.subject).substring(0,40)}…')">
       <div class="triage-icon ${icls}">${icon}</div>
       <div class="triage-body">
         <div class="triage-card-title">${escHtml(m.subject)}</div>
         <div class="triage-card-meta">${meta}</div>
         ${summaryLine}
-      </div>${badge}</div>`;
+      </div>${badge}${deleteBtn}</div>`;
   }
 
   urgEl.innerHTML = urgent.length
@@ -667,6 +686,7 @@ function renderTriage() {
     : '';
   if (noise.length) {
     nseEl.innerHTML = `<div class="triage-group-label">&#9898; Noise &mdash; ${noise.length} item${noise.length>1?'s':''}
+      <button class="noise-toggle" onclick="clearAllNoise()">Clear all</button>
       <button class="noise-toggle" onclick="(function(btn){var f=document.getElementById('noise-feed');var hidden=f.style.display==='none';f.style.display=hidden?'flex':'none';btn.textContent=hidden?'Hide':'Show '+${noise.length};}).call(null,this)">Hide</button>
     </div>
     <div class="triage-feed" id="noise-feed">${noise.map(cardHTML).join('')}</div>`;
