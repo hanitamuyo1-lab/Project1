@@ -263,6 +263,25 @@ footer { background: var(--charcoal); padding: 80px 96px 48px; }
 
 <div id="page-content">
 
+<!-- SUBSCRIBE -->
+<section class="subscribe-section">
+  <div class="subscribe-inner">
+    <div class="subscribe-text">
+      <p class="subscribe-eyebrow">Stay in the loop</p>
+      <h2 class="subscribe-h2">Subscribe For Free.</h2>
+      <p class="subscribe-sub">Get updates on new features and early access invites. No spam, ever.</p>
+    </div>
+    <div class="subscribe-form-wrap">
+      <div class="subscribe-form" id="subscribe-form">
+        <input class="subscribe-input" type="email" id="sub-email" placeholder="your@email.com" onkeydown="if(event.key==='Enter')doSubscribe()">
+        <button class="subscribe-btn" id="sub-btn" onclick="doSubscribe()">Subscribe &rarr;</button>
+      </div>
+      <p class="subscribe-error" id="sub-err"></p>
+      <p class="subscribe-success" id="sub-ok" style="display:none;">&#10003; You're subscribed. Thanks!</p>
+    </div>
+  </div>
+</section>
+
 <!-- RED BAND -->
 <div class="red-band"></div>
 
@@ -402,25 +421,6 @@ footer { background: var(--charcoal); padding: 80px 96px 48px; }
     <h2 class="cta-h2">Get your<br><span>focus</span> back.</h2>
     <div class="cta-form">
       <a href="#triage-section" class="btn-pill">Connect Gmail &rarr;</a>
-    </div>
-  </div>
-</section>
-
-<!-- SUBSCRIBE -->
-<section class="subscribe-section">
-  <div class="subscribe-inner">
-    <div class="subscribe-text">
-      <p class="subscribe-eyebrow">Stay in the loop</p>
-      <h2 class="subscribe-h2">Subscribe For Free.</h2>
-      <p class="subscribe-sub">Get updates on new features and early access invites. No spam, ever.</p>
-    </div>
-    <div class="subscribe-form-wrap">
-      <div class="subscribe-form" id="subscribe-form">
-        <input class="subscribe-input" type="email" id="sub-email" placeholder="your@email.com" onkeydown="if(event.key==='Enter')doSubscribe()">
-        <button class="subscribe-btn" id="sub-btn" onclick="doSubscribe()">Subscribe &rarr;</button>
-      </div>
-      <p class="subscribe-error" id="sub-err"></p>
-      <p class="subscribe-success" id="sub-ok" style="display:none;">&#10003; You're subscribed. Thanks!</p>
     </div>
   </div>
 </section>
