@@ -311,6 +311,14 @@ footer { background: var(--charcoal); padding: 80px 96px 48px; }
     <p class="section-eyebrow">Live triage</p>
     <h2 class="section-h2">Your inbox,<br><strong>ranked by what matters.</strong></h2>
 
+    <div id="triage-locked-msg" style="display:none;">
+      <div class="triage-connect-box">
+        <p class="triage-connect-hint">Subscribe above to unlock live mailbox triage &mdash; it's free.</p>
+        <button class="btn-pill" style="margin-top:20px;" onclick="scrollToSubscribe()">Subscribe to unlock &rarr;</button>
+      </div>
+    </div>
+
+    <div id="triage-gated">
     <div class="triage-connect-bar">
       <form class="imap-connect-form" id="imap-connect-form" onsubmit="connectImap(event)">
         <input class="imap-input" type="email" id="imap-email" placeholder="you@gmail.com" required oninput="updateAppPasswordLink()">
@@ -354,6 +362,7 @@ footer { background: var(--charcoal); padding: 80px 96px 48px; }
       <div id="triage-important"></div>
       <div id="triage-noise"></div>
     </div>
+    </div><!-- /triage-gated -->
   </div>
 </div>
 
@@ -708,18 +717,46 @@ async function doSubscribe() {
       body: JSON.stringify({ email })
     });
     const data = await res.json();
-    if (!res.ok) {
-      err.textContent = data.code === '23505' ? 'Already subscribed!' : 'Something went wrong. Try again.';
+    if (!res.ok && data.code !== '23505') {
+      err.textContent = 'Something went wrong. Try again.';
       return;
     }
     document.getElementById('subscribe-form').style.display = 'none';
+    ok.textContent = data.code === '23505' ? '✓ Already subscribed — you\'re unlocked!' : '✓ You\'re subscribed. Thanks!';
     ok.style.display = 'block';
+    unlockTriage();
   } catch (e) {
     err.textContent = 'Something went wrong. Try again.';
   } finally {
     btn.textContent = 'Subscribe →'; btn.disabled = false;
   }
 }
+
+// ── Subscribe gate ──────────────────────────────────────────
+const SUBSCRIBED_KEY = 'signal_subscribed';
+
+function isSubscribed() { return localStorage.getItem(SUBSCRIBED_KEY) === 'true'; }
+
+function applySubscribeGate() {
+  const unlocked = isSubscribed();
+  document.getElementById('triage-gated').style.display = unlocked ? '' : 'none';
+  document.getElementById('triage-locked-msg').style.display = unlocked ? 'none' : 'block';
+}
+
+function unlockTriage() {
+  localStorage.setItem(SUBSCRIBED_KEY, 'true');
+  applySubscribeGate();
+  showToast('Unlocked — connect your mailbox below');
+  setTimeout(() => document.getElementById('triage-section').scrollIntoView({ behavior: 'smooth' }), 900);
+}
+
+function scrollToSubscribe() {
+  document.querySelector('.subscribe-section').scrollIntoView({ behavior: 'smooth' });
+  const emailEl = document.getElementById('sub-email');
+  if (emailEl) emailEl.focus();
+}
+
+applySubscribeGate();
 
 // ── Nav scroll ─────────────────────────────────────────────
 window.addEventListener('scroll', () => {
