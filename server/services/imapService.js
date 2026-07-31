@@ -3,13 +3,14 @@ const { simpleParser } = require('mailparser');
 
 // Known IMAP hosts per provider. Extend this map to support more providers later.
 const PROVIDER_CONFIGS = [
-  { match: /gmail\.com$/i, host: 'imap.gmail.com', port: 993 },
-  { match: /outlook\.com$|hotmail\.com$|live\.com$/i, host: 'outlook.office365.com', port: 993 },
-  { match: /yahoo\.com$/i, host: 'imap.mail.yahoo.com', port: 993 },
+  { match: /^(gmail|googlemail)\.com$/i, host: 'imap.gmail.com', port: 993 },
+  { match: /^(outlook|hotmail|live)\.[a-z.]+$|^msn\.com$/i, host: 'outlook.office365.com', port: 993 },
+  { match: /^yahoo\.[a-z.]+$|^(ymail|rocketmail)\.com$/i, host: 'imap.mail.yahoo.com', port: 993 },
 ];
 
 function getImapConfig(email) {
-  const domainMatch = PROVIDER_CONFIGS.find((p) => p.match.test(email));
+  const domain = (email.split('@')[1] || '').toLowerCase();
+  const domainMatch = PROVIDER_CONFIGS.find((p) => p.match.test(domain));
   if (!domainMatch) {
     throw new Error(`Unsupported email provider for "${email}". Only Gmail, Outlook and Yahoo are supported right now.`);
   }
