@@ -14,6 +14,7 @@
     "express": "^4.19.2",
     "imapflow": "^1.0.169",
     "mailparser": "^3.7.1",
-    "openai": "^4.68.0"
+    "openai": "^4.68.0",
+    "stripe": "^17.3.1"
   }
 }

@@ -313,8 +313,9 @@ footer { background: var(--charcoal); padding: 80px 96px 48px; }
 
     <div id="triage-locked-msg" style="display:none;">
       <div class="triage-connect-box">
-        <p class="triage-connect-hint">Subscribe above to unlock live mailbox triage &mdash; it's free.</p>
-        <button class="btn-pill" style="margin-top:20px;" onclick="scrollToSubscribe()">Subscribe to unlock &rarr;</button>
+        <p class="triage-connect-hint">Unlock live mailbox triage for a one-time payment of <strong>&pound;3.99</strong>.</p>
+        <button class="btn-pill" id="btn-unlock-pay" style="margin-top:20px;" onclick="startCheckout()">Unlock for &pound;3.99 &rarr;</button>
+        <p class="imap-connect-error" id="pay-error"></p>
       </div>
     </div>
 
@@ -722,9 +723,8 @@ async function doSubscribe() {
       return;
     }
     document.getElementById('subscribe-form').style.display = 'none';
-    ok.textContent = data.code === '23505' ? '✓ Already subscribed — you\'re unlocked!' : '✓ You\'re subscribed. Thanks!';
+    ok.textContent = data.code === '23505' ? '✓ Already subscribed!' : '✓ You\'re subscribed. Thanks!';
     ok.style.display = 'block';
-    unlockTriage();
   } catch (e) {
     err.textContent = 'Something went wrong. Try again.';
   } finally {
@@ -732,31 +732,60 @@ async function doSubscribe() {
   }
 }
 
-// ── Subscribe gate ──────────────────────────────────────────
-const SUBSCRIBED_KEY = 'signal_subscribed';
+// ── Payment gate (£3.99 one-time unlock) ────────────────────
+const PAID_KEY = 'signal_paid';
 
-function isSubscribed() { return localStorage.getItem(SUBSCRIBED_KEY) === 'true'; }
+function isPaid() { return localStorage.getItem(PAID_KEY) === 'true'; }
 
-function applySubscribeGate() {
-  const unlocked = isSubscribed();
+function applyPaymentGate() {
+  const unlocked = isPaid();
   document.getElementById('triage-gated').style.display = unlocked ? '' : 'none';
   document.getElementById('triage-locked-msg').style.display = unlocked ? 'none' : 'block';
 }
 
 function unlockTriage() {
-  localStorage.setItem(SUBSCRIBED_KEY, 'true');
-  applySubscribeGate();
-  showToast('Unlocked — connect your mailbox below');
+  localStorage.setItem(PAID_KEY, 'true');
+  applyPaymentGate();
+  showToast('Payment confirmed — connect your mailbox below');
   setTimeout(() => document.getElementById('triage-section').scrollIntoView({ behavior: 'smooth' }), 900);
 }
 
-function scrollToSubscribe() {
-  document.querySelector('.subscribe-section').scrollIntoView({ behavior: 'smooth' });
-  const emailEl = document.getElementById('sub-email');
-  if (emailEl) emailEl.focus();
+async function startCheckout() {
+  const btn = document.getElementById('btn-unlock-pay');
+  const err = document.getElementById('pay-error');
+  err.textContent = '';
+  btn.textContent = 'Redirecting…';
+  btn.disabled = true;
+  try {
+    const res = await fetch(API_BASE + '/create-checkout-session', { method: 'POST' });
+    const data = await res.json();
+    if (!res.ok || !data.url) throw new Error(data.error || 'Could not start checkout.');
+    window.location.href = data.url;
+  } catch (e) {
+    err.textContent = e.message;
+    btn.textContent = 'Unlock for £3.99 →';
+    btn.disabled = false;
+  }
 }
 
-applySubscribeGate();
+async function handlePaymentReturn() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('paid') !== '1') return;
+  const sessionId = params.get('session_id');
+  history.replaceState(null, '', window.location.pathname + window.location.hash);
+  if (!sessionId) return;
+  try {
+    const res = await fetch(API_BASE + '/verify-payment?session_id=' + encodeURIComponent(sessionId));
+    const data = await res.json();
+    if (data.paid) unlockTriage();
+    else showToast('Payment not confirmed — please try again');
+  } catch (e) {
+    showToast('Could not verify payment: ' + e.message);
+  }
+}
+
+applyPaymentGate();
+handlePaymentReturn();
 
 // ── Nav scroll ─────────────────────────────────────────────
 window.addEventListener('scroll', () => {
