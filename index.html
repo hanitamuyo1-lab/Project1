@@ -18,8 +18,8 @@
   --light:    #f2f2f2;
   --font:     'Inter', 'Helvetica Neue', Arial, sans-serif;
 }
-html { scroll-behavior: smooth; }
-body { font-family: var(--font); background: var(--white); color: var(--charcoal); overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+html { scroll-behavior: smooth; overflow-x: hidden; width: 100%; }
+body { font-family: var(--font); background: var(--white); color: var(--charcoal); overflow-x: hidden; -webkit-font-smoothing: antialiased; overflow-wrap: break-word; }
 
 /* ── Nav ───────────────────────────────────────────────────── */
 nav {
@@ -80,7 +80,7 @@ nav.solid .nav-links a:hover { color: var(--red); }
 .imap-help-box { display: none; background: var(--light); border-radius: 6px; padding: 20px 24px; margin-top: 14px; max-width: 560px; }
 .imap-help-box.open { display: block; }
 .imap-help-box ol { margin: 8px 0 0 20px; font-size: 14px; color: var(--charcoal); line-height: 1.7; }
-.imap-help-box a { color: var(--red); }
+.imap-help-box a { color: var(--red); overflow-wrap: anywhere; }
 .imap-help-box strong { display: block; font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--grey); }
 
 /* ── Red band ──────────────────────────────────────────────── */
@@ -215,7 +215,7 @@ footer { background: var(--charcoal); padding: 80px 96px 48px; }
 @media (max-width: 1024px) {
   nav { padding: 0 32px; }
   .hero { padding: 64px 48px 72px; }
-  .section-wrap, .institutional, .cta-inner, footer { padding-left: 48px; padding-right: 48px; }
+  .section-wrap, .institutional, .cta-inner, .subscribe-inner, footer { padding-left: 48px; padding-right: 48px; }
   .features-grid { grid-template-columns: repeat(2, 1fr); }
   .inst-stats { grid-template-columns: repeat(2, 1fr); }
   .footer-cols { grid-template-columns: repeat(2, 1fr); }
@@ -226,7 +226,7 @@ footer { background: var(--charcoal); padding: 80px 96px 48px; }
   .hero { padding: 56px 20px 56px; min-height: 85vh; }
   .hero h1 { letter-spacing: -1px; }
   .red-band { height: 40px; }
-  .section-wrap, .institutional, .cta-inner, footer { padding-left: 20px; padding-right: 20px; padding-top: 64px; padding-bottom: 64px; }
+  .section-wrap, .institutional, .cta-inner, .subscribe-inner, footer { padding-left: 20px; padding-right: 20px; padding-top: 64px; padding-bottom: 64px; }
   .features-grid { grid-template-columns: 1fr; }
   .inst-stats { grid-template-columns: 1fr; }
   .footer-cols { grid-template-columns: 1fr; }
@@ -235,6 +235,19 @@ footer { background: var(--charcoal); padding: 80px 96px 48px; }
   .cta-submit { border-radius: 2px; }
   .triage-connect-box { padding: 28px 20px; }
   .inst-stat-num { font-size: 56px; }
+
+  .subscribe-inner { gap: 32px; }
+  .subscribe-form { flex-direction: column; width: 100%; }
+  .subscribe-form-wrap { width: 100%; }
+  .subscribe-input { width: 100%; border-right: 1px solid rgba(255,255,255,0.18); border-radius: 2px; margin-bottom: 8px; box-sizing: border-box; }
+  .subscribe-btn { width: 100%; border-radius: 2px; }
+
+  .triage-connect-bar, .imap-connect-form { width: 100%; }
+  .imap-input { min-width: 0; width: 100%; box-sizing: border-box; }
+  .imap-password-wrap { width: 100%; }
+  #btn-connect, #btn-unlink { width: 100%; justify-content: center; }
+
+  .toast { max-width: calc(100vw - 40px); white-space: normal; text-align: center; }
 }
 </style>
 </head>
