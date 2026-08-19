@@ -23,6 +23,9 @@ async function createCheckoutSession() {
         quantity: 1,
       },
     ],
+    payment_intent_data: {
+      statement_descriptor: 'SIGNAL TRIAGE',
+    },
     success_url: `${APP_URL}/?paid=1&session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${APP_URL}/#triage-section`,
   });
