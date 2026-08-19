@@ -1,7 +1,7 @@
 const Stripe = require('stripe');
 
 const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY) : null;
-const PRICE_PENCE = parseInt(process.env.UNLOCK_PRICE_PENCE || '399', 10);
+const PRICE_PENCE = parseInt(process.env.UNLOCK_PRICE_PENCE || '99', 10);
 const APP_URL = (process.env.APP_URL || 'http://localhost:5500').replace(/\/$/, '');
 
 function requireStripe() {

@@ -313,8 +313,8 @@ footer { background: var(--charcoal); padding: 80px 96px 48px; }
 
     <div id="triage-locked-msg" style="display:none;">
       <div class="triage-connect-box">
-        <p class="triage-connect-hint">Unlock live mailbox triage for a one-time payment of <strong>&pound;3.99</strong>.</p>
-        <button class="btn-pill" id="btn-unlock-pay" style="margin-top:20px;" onclick="startCheckout()">Unlock for &pound;3.99 &rarr;</button>
+        <p class="triage-connect-hint">Unlock live mailbox triage for a one-time payment of <strong>99p</strong>.</p>
+        <button class="btn-pill" id="btn-unlock-pay" style="margin-top:20px;" onclick="startCheckout()">Unlock for 99p &rarr;</button>
         <p class="imap-connect-error" id="pay-error"></p>
       </div>
     </div>
@@ -732,7 +732,7 @@ async function doSubscribe() {
   }
 }
 
-// ── Payment gate (£3.99 one-time unlock) ────────────────────
+// ── Payment gate (99p one-time unlock) ───────────────────────
 const PAID_KEY = 'signal_paid';
 
 function isPaid() { return localStorage.getItem(PAID_KEY) === 'true'; }
@@ -763,7 +763,7 @@ async function startCheckout() {
     window.location.href = data.url;
   } catch (e) {
     err.textContent = e.message;
-    btn.textContent = 'Unlock for £3.99 →';
+    btn.textContent = 'Unlock for 99p →';
     btn.disabled = false;
   }
 }
